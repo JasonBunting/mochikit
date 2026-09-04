@@ -467,7 +467,14 @@ tests.test_Async = function () {
         if ("responseType" in getXMLHttpRequest()) {
             d = doXHR("test_MochiKit-Async.json", { responseType: "arraybuffer" });
             d.addCallback(function (xhr) {
-                is(xhr.response.byteLength, 17, "XHR2 passed");
+                var bytes = new Uint8Array(xhr.response);
+                var endsWithCRLF = bytes[bytes.length - 2] === 13
+                    && bytes[bytes.length - 1] === 10;
+                is(
+                    xhr.response.byteLength,
+                    17 + (endsWithCRLF ? 1 : 0),
+                    "XHR2 passed"
+                );
             });
             d.addErrback(function (e) {
                 ok(false, "XHR2 failed: " + e);

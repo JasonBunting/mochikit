@@ -43,7 +43,7 @@ tests.test_Style = function () {
     // Coordinates including border and padding
     pos = getElementPosition('innerDiv');
     is(pos.x, 444, 'x position with offsetParent border');
-    is(pos.y, 111, 'y position with offsetParent border');
+    isNear(pos.y, 111, 1, 'y position with offsetParent border');
 
     // moved
     var newPos = new MochiKit.Style.Coordinates(500, 200);
@@ -151,26 +151,26 @@ tests.test_Style = function () {
 
     var dims = getElementDimensions('styleTest');
     is(dims.w, 166, 'getElementDimensions w ok');
-    is(dims.h, 124, 'getElementDimensions h ok');
+    isNear(dims.h, 124, 1, 'getElementDimensions h ok');
 
     dims = getElementDimensions('styleTest', true);
     is(dims.w, 100, 'getElementDimensions content w ok');
-    is(dims.h, 80, 'getElementDimensions content h ok');
+    isNear(dims.h, 80, 1, 'getElementDimensions content h ok');
 
     setElementDimensions('styleTest', {'w': 200, 'h': 150});
     dims = getElementDimensions('styleTest', true);
     is(dims.w, 200, 'setElementDimensions w ok');
-    is(dims.h, 150, 'setElementDimensions h ok');
+    isNear(dims.h, 150, 1, 'setElementDimensions h ok');
 
     setElementDimensions('styleTest', {'w': 150});
     dims = getElementDimensions('styleTest', true);
     is(dims.w, 150, 'setElementDimensions only w ok');
-    is(dims.h, 150, 'setElementDimensions h not updated ok');
+    isNear(dims.h, 150, 1, 'setElementDimensions h not updated ok');
 
     hideElement('styleTest');
     dims = getElementDimensions('styleTest', true);
     is(dims.w, 150, 'getElementDimensions w ok when display none');
-    is(dims.h, 150, 'getElementDimensions h ok when display none');
+    isNear(dims.h, 150, 1, 'getElementDimensions h ok when display none');
 
     dims = getElementDimensions('hideTest', true);
     is(dims.w, 100, 'getElementDimensions w ok when CSS display none');

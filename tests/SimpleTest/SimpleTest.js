@@ -51,6 +51,9 @@ SimpleTest._scopeFilter = { 'window': true,
                             'mozPaintCount': true,
                             'clipboardData': true,
                             'addEventListener': true,
+                            // Chromium may add this event-listener helper when
+                            // dispatching window.onload, after init() snapshots scope.
+                            '_listener': true,
                             'clientInformation': true,
                             'sessionStorage': true,
                             'localStorage': true,
@@ -147,6 +150,19 @@ SimpleTest.ok = function (condition, name, diag) {
 SimpleTest.is = function (a, b, name) {
     var repr = MochiKit.Base.repr;
     SimpleTest.ok(a == b, name, "got " + repr(a) + ", expected " + repr(b));
+};
+
+/**
+ * Asserts that two numeric values differ by no more than a small tolerance.
+ */
+SimpleTest.isNear = function (a, b, tolerance, name) {
+    var repr = MochiKit.Base.repr;
+    SimpleTest.ok(
+        Math.abs(a - b) <= tolerance,
+        name,
+        "got " + repr(a) + ", expected " + repr(b)
+            + " +/- " + repr(tolerance)
+    );
 };
 
 /**
@@ -500,4 +516,5 @@ SimpleTest.isa = function (object, clas) {
 // Global symbols:
 var ok = SimpleTest.ok;
 var is = SimpleTest.is;
+var isNear = SimpleTest.isNear;
 var isDeeply = SimpleTest.isDeeply;
