@@ -1169,20 +1169,22 @@ MochiKit.Base.update(MochiKit.DOM, {
         this.STYLE = createDOMFunc("style");
         /** @id MochiKit.DOM.SVG */
         this.SVG = createSVGFunc("svg");
-        /** @id MochiKit.DOM.SVG_CIRCLE */
-        this.SVG_CIRCLE = createSVGFunc("circle");
-        /** @id MochiKit.DOM.SVG_G */
-        this.SVG_G = createSVGFunc("g");
-        /** @id MochiKit.DOM.SVG_LINE */
-        this.SVG_LINE = createSVGFunc("line");
-        /** @id MochiKit.DOM.SVG_PATH */
-        this.SVG_PATH = createSVGFunc("path");
-        /** @id MochiKit.DOM.SVG_POLYGON */
-        this.SVG_POLYGON = createSVGFunc("polygon");
-        /** @id MochiKit.DOM.SVG_RECT */
-        this.SVG_RECT = createSVGFunc("rect");
-        /** @id MochiKit.DOM.SVG_TEXT */
-        this.SVG_TEXT = createSVGFunc("text");
+        /** @id MochiKit.DOM.SVG.CIRCLE */
+        this.SVG.CIRCLE = createSVGFunc("circle");
+        /** @id MochiKit.DOM.SVG.G */
+        this.SVG.G = createSVGFunc("g");
+        /** @id MochiKit.DOM.SVG.IMAGE */
+        this.SVG.IMAGE = createSVGFunc("image");
+        /** @id MochiKit.DOM.SVG.LINE */
+        this.SVG.LINE = createSVGFunc("line");
+        /** @id MochiKit.DOM.SVG.PATH */
+        this.SVG.PATH = createSVGFunc("path");
+        /** @id MochiKit.DOM.SVG.POLYGON */
+        this.SVG.POLYGON = createSVGFunc("polygon");
+        /** @id MochiKit.DOM.SVG.RECT */
+        this.SVG.RECT = createSVGFunc("rect");
+        /** @id MochiKit.DOM.SVG.TEXT */
+        this.SVG.TEXT = createSVGFunc("text");
         /** @id MochiKit.DOM.TABLE */
         this.TABLE = createDOMFunc("table");
         /** @id MochiKit.DOM.TBODY */

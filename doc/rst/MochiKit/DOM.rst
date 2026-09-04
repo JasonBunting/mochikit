@@ -462,17 +462,19 @@ Functions
     Create an SVG DOM element in the SVG namespace without exposing
     ``document.createElementNS()`` to application code.
 
-    Partially applied versions of this function for common SVG tags are
-    available as aliases:
+    ``SVG`` is a partially applied version of this function for the root
+    ``<svg>`` element. Its properties are partially applied helpers for
+    common SVG child elements:
 
     - ``SVG``
-    - ``SVG_CIRCLE``
-    - ``SVG_G``
-    - ``SVG_LINE``
-    - ``SVG_PATH``
-    - ``SVG_POLYGON``
-    - ``SVG_RECT``
-    - ``SVG_TEXT``
+    - ``SVG.CIRCLE``
+    - ``SVG.G``
+    - ``SVG.IMAGE``
+    - ``SVG.LINE``
+    - ``SVG.PATH``
+    - ``SVG.POLYGON``
+    - ``SVG.RECT``
+    - ``SVG.TEXT``
 
     ``name``:
         The SVG element name to create (e.g. ``'svg'`` or ``'path'``).

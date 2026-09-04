@@ -183,16 +183,19 @@ tests.test_DOM = function () {
 
     svg = SVG(
         {"width": "800", "height": "600"},
-        SVG_G(
+        SVG.G(
             null,
-            SVG_POLYGON({"points": "50,0 100,25 100,75 50,100 0,75 0,25"}),
-            SVG_TEXT({"x": "50", "y": "50"}, "hex")
+            SVG.POLYGON({"points": "50,0 100,25 100,75 50,100 0,75 0,25"}),
+            SVG.TEXT({"x": "50", "y": "50"}, "hex"),
+            SVG.IMAGE({"href": "unit.png", "width": "40", "height": "40"})
         )
     );
     is( svg.namespaceURI, svgNS, "SVG helper namespace" );
     is( getNodeAttribute(svg, "width"), "800", "SVG helper attribute" );
     is( svg.childNodes[0].namespaceURI, svgNS, "SVG helper child namespace" );
-    is( svg.childNodes[0].childNodes.length, 2, "SVG helper contents" );
+    is( svg.childNodes[0].childNodes.length, 3, "SVG helper contents" );
+    is( svg.childNodes[0].childNodes[2].namespaceURI, svgNS, "SVG image namespace" );
+    is( svg.childNodes[0].childNodes[2].tagName.toLowerCase(), "image", "SVG image tag" );
 
     is( scrapeText(d), "Goddamn, I like pork tacos", "scrape OK" );
     is( scrapeText(d, true).join(""), "Goddamn, I like pork tacos", "scrape Array OK" );
