@@ -1,3 +1,10 @@
+2026-09-04      unreleased
+
+- Added MochiKit.DOM.createSVG() and createSVGFunc() helpers for creating
+  SVG elements with the correct namespace, plus SVG, SVG_CIRCLE, SVG_G,
+  SVG_LINE, SVG_PATH, SVG_POLYGON, SVG_RECT and SVG_TEXT convenience
+  constructors.
+
 2013-01-05      v1.5
 
 - Fixed element measurement for table cells in Firefox (#18)

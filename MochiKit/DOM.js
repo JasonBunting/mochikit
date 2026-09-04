@@ -513,6 +513,36 @@ MochiKit.Base.update(MochiKit.DOM, {
         );
     },
 
+    /** @id MochiKit.DOM.createSVG */
+    createSVG: function (name, attrs/*, nodes... */) {
+        var elem;
+        var self = MochiKit.DOM;
+        var m = MochiKit.Base;
+        if (typeof(attrs) == "string" || typeof(attrs) == "number") {
+            var args = m.extend([name, null], arguments, 1);
+            return arguments.callee.apply(this, args);
+        }
+        elem = self._document.createElementNS("http://www.w3.org/2000/svg", name);
+        if (attrs) {
+            self.updateNodeAttributes(elem, attrs);
+        }
+        if (arguments.length <= 2) {
+            return elem;
+        } else {
+            var args = m.extend([elem], arguments, 2);
+            return self.appendChildNodes.apply(this, args);
+        }
+    },
+
+    /** @id MochiKit.DOM.createSVGFunc */
+    createSVGFunc: function (/* tag, attrs, *nodes */) {
+        var m = MochiKit.Base;
+        return m.partial.apply(
+            this,
+            m.extend([MochiKit.DOM.createSVG], arguments)
+        );
+    },
+
     /** @id MochiKit.DOM.removeElement */
     removeElement: function (elem) {
         var self = MochiKit.DOM;
@@ -1042,6 +1072,7 @@ MochiKit.Base.update(MochiKit.DOM, {
 
         // shorthand for createDOM syntax
         var createDOMFunc = this.createDOMFunc;
+        var createSVGFunc = this.createSVGFunc;
         /** @id MochiKit.DOM.A */
         this.A = createDOMFunc("a");
         /** @id MochiKit.DOM.ARTICLE */
@@ -1136,6 +1167,22 @@ MochiKit.Base.update(MochiKit.DOM, {
         this.STRONG = createDOMFunc("strong");
         /** @id MochiKit.DOM.STYLE */
         this.STYLE = createDOMFunc("style");
+        /** @id MochiKit.DOM.SVG */
+        this.SVG = createSVGFunc("svg");
+        /** @id MochiKit.DOM.SVG_CIRCLE */
+        this.SVG_CIRCLE = createSVGFunc("circle");
+        /** @id MochiKit.DOM.SVG_G */
+        this.SVG_G = createSVGFunc("g");
+        /** @id MochiKit.DOM.SVG_LINE */
+        this.SVG_LINE = createSVGFunc("line");
+        /** @id MochiKit.DOM.SVG_PATH */
+        this.SVG_PATH = createSVGFunc("path");
+        /** @id MochiKit.DOM.SVG_POLYGON */
+        this.SVG_POLYGON = createSVGFunc("polygon");
+        /** @id MochiKit.DOM.SVG_RECT */
+        this.SVG_RECT = createSVGFunc("rect");
+        /** @id MochiKit.DOM.SVG_TEXT */
+        this.SVG_TEXT = createSVGFunc("text");
         /** @id MochiKit.DOM.TABLE */
         this.TABLE = createDOMFunc("table");
         /** @id MochiKit.DOM.TBODY */

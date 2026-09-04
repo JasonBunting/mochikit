@@ -54,6 +54,7 @@ if (typeof(tests) == 'undefined') { tests = {}; }
 
 tests.test_DOM = function () {
     var lst = [];
+    var svgNS = "http://www.w3.org/2000/svg";
     var o = {"blah": function () { lst.push("original"); }};
     addToCallStack(o, "blah", function () { lst.push("new"); }, true);
     addToCallStack(o, "blah", function () { lst.push("stuff"); }, true);
@@ -154,6 +155,44 @@ tests.test_DOM = function () {
         escapeHTML(toHTML(createDOM("span", null))),
         "createDOMFunc vs createDOM"
     );
+
+    var svg = createSVG("svg");
+    is( svg.namespaceURI, svgNS, "createSVG namespace" );
+    is( svg.tagName.toLowerCase(), "svg", "createSVG tag" );
+
+    svg = createSVG("text", "hex");
+    is( scrapeText(svg), "hex", "createSVG string attrs become child text" );
+
+    svg = createSVG(
+        "g",
+        {"data-role": "layer"},
+        createSVG("polygon", {"points": "50,0 100,25 100,75 50,100 0,75 0,25"}),
+        createSVG("text", {"x": "50", "y": "50"}, "hex")
+    );
+    is( svg.namespaceURI, svgNS, "createSVG child namespace" );
+    is( getNodeAttribute(svg, "data-role"), "layer", "createSVG attribute" );
+    is( svg.childNodes.length, 2, "createSVG contents" );
+    is( svg.childNodes[0].namespaceURI, svgNS, "createSVG nested namespace" );
+    is( scrapeText(svg), "hex", "createSVG text contents" );
+
+    is(
+        escapeHTML(toHTML(SVG(null))),
+        escapeHTML(toHTML(createSVG("svg", null))),
+        "createSVGFunc vs createSVG"
+    );
+
+    svg = SVG(
+        {"width": "800", "height": "600"},
+        SVG_G(
+            null,
+            SVG_POLYGON({"points": "50,0 100,25 100,75 50,100 0,75 0,25"}),
+            SVG_TEXT({"x": "50", "y": "50"}, "hex")
+        )
+    );
+    is( svg.namespaceURI, svgNS, "SVG helper namespace" );
+    is( getNodeAttribute(svg, "width"), "800", "SVG helper attribute" );
+    is( svg.childNodes[0].namespaceURI, svgNS, "SVG helper child namespace" );
+    is( svg.childNodes[0].childNodes.length, 2, "SVG helper contents" );
 
     is( scrapeText(d), "Goddamn, I like pork tacos", "scrape OK" );
     is( scrapeText(d, true).join(""), "Goddamn, I like pork tacos", "scrape Array OK" );

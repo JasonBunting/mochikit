@@ -457,6 +457,66 @@ Functions
         Available in MochiKit 1.3.1+
 
 
+:mochidef:`createSVG(name[, attrs[, node[, ...]]])`:
+
+    Create an SVG DOM element in the SVG namespace without exposing
+    ``document.createElementNS()`` to application code.
+
+    Partially applied versions of this function for common SVG tags are
+    available as aliases:
+
+    - ``SVG``
+    - ``SVG_CIRCLE``
+    - ``SVG_G``
+    - ``SVG_LINE``
+    - ``SVG_PATH``
+    - ``SVG_POLYGON``
+    - ``SVG_RECT``
+    - ``SVG_TEXT``
+
+    ``name``:
+        The SVG element name to create (e.g. ``'svg'`` or ``'path'``).
+
+    ``attrs``:
+        An object whose properties will be used as the SVG attributes,
+        or ``null`` if no attributes need to be set.
+
+        See :mochiref:`updateNodeAttributes` for more information.
+
+        For convenience, if ``attrs`` is a string, ``null`` is used
+        and the string will be considered the first ``node``.
+
+    ``node``...:
+        All additional arguments, if any, will be coerced into DOM
+        nodes that are appended as children using the `DOM Coercion
+        Rules`_.
+
+    *returns*:
+        An SVG DOM element
+
+
+:mochidef:`createSVGFunc(tag[, attrs[, node[, ...]]])`:
+
+    Convenience function to create a partially applied
+    :mochiref:`createSVG` function.
+
+    See :mochiref:`createSVG` for more detailed descriptions of the
+    arguments.
+
+    ``tag``:
+        The SVG tag name
+
+    ``attrs``:
+        Optionally specify the attributes to apply
+
+    ``node``...:
+        Optionally specify any children nodes it should have
+
+    *returns*:
+        function that takes additional arguments and calls
+        :mochiref:`createSVG`
+
+
 :mochidef:`currentDocument()`:
 
     Return the current ``document`` `DOM Context`_. This will always
