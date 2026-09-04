@@ -631,6 +631,35 @@ MochiKit.Async.maybeDeferred = function (func) {
     return result;
 };
 
+/** @id MochiKit.Async.fromPromise */
+MochiKit.Async.fromPromise = function (promise) {
+    if (!promise || typeof(promise.then) != "function") {
+        throw new TypeError("fromPromise requires a Promise or thenable");
+    }
+
+    var self = MochiKit.Async;
+    var d = new self.Deferred();
+    try {
+        promise.then(
+            function (value) {
+                if (d.state() == "unfired") {
+                    d.callback(value);
+                }
+            },
+            function (error) {
+                if (d.state() == "unfired") {
+                    d.errback(error);
+                }
+            }
+        );
+    } catch (error) {
+        if (d.state() == "unfired") {
+            d.errback(error);
+        }
+    }
+    return d;
+};
+
 
 MochiKit.Async.__new__ = function () {
     var m = MochiKit.Base;

@@ -488,6 +488,94 @@ tests.test_Async = function () {
         }
         return d;
     });
+    withLock("fromPromise fulfillment and chaining", function () {
+        return fromPromise(Promise.resolve(3))
+            .addCallback(function (value) {
+                is(value, 3, "fromPromise fulfillment");
+                return value + 1;
+            })
+            .addCallback(function (value) {
+                is(value, 4, "fromPromise callback chaining");
+            });
+    });
+    withLock("fromPromise rejection", function () {
+        var error = new Error("promise rejection");
+        return fromPromise(Promise.reject(error)).addErrback(function (result) {
+            is(result, error, "fromPromise Error rejection");
+        });
+    });
+    withLock("fromPromise non-Error rejection", function () {
+        return fromPromise(Promise.reject("promise rejection"))
+            .addErrback(function (result) {
+                ok(result instanceof GenericError, "fromPromise wraps non-Error rejection");
+                is(result.message, "promise rejection", "fromPromise rejection message");
+            });
+    });
+    withLock("fromPromise settled Promise", function () {
+        var promise = Promise.resolve("settled");
+        return fromPromise(promise).addCallback(function (value) {
+            is(value, "settled", "fromPromise settled Promise");
+        });
+    });
+    withLock("fromPromise thenable", function () {
+        var thenable = {
+            then: function (resolve) {
+                resolve("thenable value");
+            }
+        };
+        return fromPromise(thenable).addCallback(function (value) {
+            is(value, "thenable value", "fromPromise thenable");
+        });
+    });
+    try {
+        fromPromise(null);
+        ok(false, "fromPromise rejects invalid input");
+    } catch (error) {
+        ok(error instanceof TypeError, "fromPromise rejects invalid input");
+    }
+    withLock("fromPromise cancelled fulfillment", function () {
+        var resolve;
+        var promise = new Promise(function (fulfill) {
+            resolve = fulfill;
+        });
+        var d = fromPromise(promise);
+        var called = false;
+        d.addCallback(function () {
+            called = true;
+        });
+        d.addErrback(function (error) {
+            ok(error instanceof CancelledError, "fromPromise cancellation errback");
+        });
+        d.cancel();
+        resolve("ignored");
+        var done = new Deferred();
+        Promise.resolve().then(function () {
+            ok(!called, "fromPromise ignores fulfillment after cancellation");
+            done.callback();
+        });
+        return done;
+    });
+    withLock("fromPromise cancelled rejection", function () {
+        var reject;
+        var promise = new Promise(function (fulfill, rejectPromise) {
+            reject = rejectPromise;
+        });
+        var d = fromPromise(promise);
+        var called = false;
+        d.addErrback(function (error) {
+            if (!(error instanceof CancelledError)) {
+                called = true;
+            }
+        });
+        d.cancel();
+        reject(new Error("ignored"));
+        var done = new Deferred();
+        Promise.resolve().then(function () {
+            ok(!called, "fromPromise ignores rejection after cancellation");
+            done.callback();
+        });
+        return done;
+    });
     lock.acquire().addCallback(function () {
         SimpleTest.finish();
     });

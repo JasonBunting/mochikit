@@ -3,6 +3,8 @@
 - Added MochiKit.DOM.createSVG() and createSVGFunc() helpers for creating
   SVG elements with the correct namespace, plus SVG and its CIRCLE, G, IMAGE,
   LINE, PATH, POLYGON, RECT and TEXT convenience constructors.
+- Added MochiKit.Async.fromPromise() to adapt JavaScript Promises and thenables
+  to MochiKit Deferreds.
 
 2013-01-05      v1.5
 

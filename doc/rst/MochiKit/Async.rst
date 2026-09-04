@@ -718,6 +718,25 @@ Functions
         Available in MochiKit 1.3.1+
 
 
+:mochidef:`fromPromise(promise)`:
+
+    Convert a JavaScript ``Promise`` or thenable into a
+    :mochiref:`Deferred`. Promise fulfillment starts the callback chain and
+    Promise rejection starts the errback chain.
+
+    Cancelling the returned ``Deferred`` does not cancel the underlying
+    Promise. If the Promise settles after cancellation, its result is ignored.
+
+    ``promise``:
+        A JavaScript ``Promise`` or object with a ``then`` method.
+
+    *returns*:
+        A new :mochiref:`Deferred`.
+
+    *raises*:
+        ``TypeError`` if ``promise`` is not a Promise or thenable.
+
+
 :mochidef:`loadJSONDoc(url[, queryArguments...])`:
 
     Do a simple ``XMLHttpRequest`` to a URL and get the response as a
