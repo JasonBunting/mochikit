@@ -1075,6 +1075,8 @@ MochiKit.Base.update(MochiKit.DOM, {
         var createSVGFunc = this.createSVGFunc;
         /** @id MochiKit.DOM.A */
         this.A = createDOMFunc("a");
+        /** @id MochiKit.DOM.ABBR */
+        this.ABBR = createDOMFunc("abbr");
         /** @id MochiKit.DOM.ARTICLE */
         this.ARTICLE = createDOMFunc("article");
         /** @id MochiKit.DOM.ASIDE */
@@ -1087,6 +1089,8 @@ MochiKit.Base.update(MochiKit.DOM, {
         this.CANVAS = createDOMFunc("canvas");
         /** @id MochiKit.DOM.CAPTION */
         this.CAPTION = createDOMFunc("caption");
+        /** @id MochiKit.DOM.CODE */
+        this.CODE = createDOMFunc("code");
         /** @id MochiKit.DOM.DD */
         this.DD = createDOMFunc("dd");
         /** @id MochiKit.DOM.DIV */
@@ -1095,6 +1099,8 @@ MochiKit.Base.update(MochiKit.DOM, {
         this.DL = createDOMFunc("dl");
         /** @id MochiKit.DOM.DT */
         this.DT = createDOMFunc("dt");
+        /** @id MochiKit.DOM.EM */
+        this.EM = createDOMFunc("em");
         /** @id MochiKit.DOM.FIELDSET */
         this.FIELDSET = createDOMFunc("fieldset");
         /** @id MochiKit.DOM.FIGURE */
@@ -1129,6 +1135,8 @@ MochiKit.Base.update(MochiKit.DOM, {
         this.IMG = createDOMFunc("img");
         /** @id MochiKit.DOM.INPUT */
         this.INPUT = createDOMFunc("input");
+        /** @id MochiKit.DOM.KBD */
+        this.KBD = createDOMFunc("kbd");
         /** @id MochiKit.DOM.LABEL */
         this.LABEL = createDOMFunc("label");
         /** @id MochiKit.DOM.LEGEND */
@@ -1161,12 +1169,18 @@ MochiKit.Base.update(MochiKit.DOM, {
         this.SECTION = createDOMFunc("section");
         /** @id MochiKit.DOM.SELECT */
         this.SELECT = createDOMFunc("select");
+        /** @id MochiKit.DOM.SMALL */
+        this.SMALL = createDOMFunc("small");
         /** @id MochiKit.DOM.SPAN */
         this.SPAN = createDOMFunc("span");
+        /** @id MochiKit.DOM.SUB */
+        this.SUB = createDOMFunc("sub");
         /** @id MochiKit.DOM.STRONG */
         this.STRONG = createDOMFunc("strong");
         /** @id MochiKit.DOM.STYLE */
         this.STYLE = createDOMFunc("style");
+        /** @id MochiKit.DOM.SUP */
+        this.SUP = createDOMFunc("sup");
         /** @id MochiKit.DOM.SVG */
         this.SVG = createSVGFunc("svg");
         /** @id MochiKit.DOM.SVG.CIRCLE */
@@ -1199,6 +1213,8 @@ MochiKit.Base.update(MochiKit.DOM, {
         this.TH = createDOMFunc("th");
         /** @id MochiKit.DOM.THEAD */
         this.THEAD = createDOMFunc("thead");
+        /** @id MochiKit.DOM.TIME */
+        this.TIME = createDOMFunc("time");
         /** @id MochiKit.DOM.TR */
         this.TR = createDOMFunc("tr");
         /** @id MochiKit.DOM.TT */
