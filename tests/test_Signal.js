@@ -582,6 +582,8 @@ tests.test_Signal = function (t) {
     t.is(sink.ev, 'dummy', 'connectOnce was disconnected properly');
 
     tests.test_SignalListenerOptions(t);
+    tests.test_SignalMouseEnterCapture(t);
+    tests.test_SignalEventAccessors(t);
 };
 
 tests.test_SignalListenerOptions = function (t) {
@@ -735,4 +737,223 @@ tests.test_SignalListenerOptions = function (t) {
     disconnect(ident);
     document.getElementById('submit').click();
     t.is(submitCalls, 1, 'Element IDs accept listener options and disconnect correctly');
+};
+
+tests.test_SignalMouseEnterCapture = function (t) {
+    if (!document.createEvent || !document.addEventListener) {
+        return;
+    }
+    var S = MochiKit.Signal;
+    var detectsNativeEvents = S._browserAlreadyHasMouseEnterAndLeave;
+    var parent = document.createElement('div');
+    var child = document.createElement('span');
+    var sibling = document.createElement('span');
+    var outside = document.createElement('div');
+    parent.appendChild(child);
+    parent.appendChild(sibling);
+    var fire = function (type, related) {
+        var event = document.createEvent('MouseEvents');
+        event.initMouseEvent(type, true, true, document.defaultView, 0,
+            0, 0, 0, 0, false, false, false, false, 0, related);
+        child.dispatchEvent(event);
+        return event;
+    };
+    var events = [['mouseenter', 'mouseover'], ['mouseleave', 'mouseout']];
+    try {
+        S._browserAlreadyHasMouseEnterAndLeave = function () { return false; };
+        for (var n = 0; n < events.length; n++) {
+            var type = events[n][0];
+            var nativeType = events[n][1];
+            var order = [];
+            connect(parent, 'on' + type, function (event) {
+                t.is(event.type(), type, 'Capture emulation retains the requested event type');
+                order.push('capture');
+            }, {capture: true, passive: true});
+            connect(child, 'on' + nativeType, function () { order.push('child'); });
+            connect(parent, 'on' + nativeType, function () { order.push('bubble'); });
+            var event = fire(nativeType, outside);
+            t.is(order.join(','), 'capture,child,bubble', type + ' capture allows target and bubble listeners');
+            t.ok(!event.defaultPrevented, type + ' capture does not cancel the native default action');
+            order = [];
+            fire(nativeType, sibling);
+            t.is(order.join(','), 'child,bubble', type + ' internal transitions do not suppress native listeners');
+            disconnectAll(parent);
+
+            order = [];
+            connect(parent, 'on' + type, function (event) {
+                order.push('explicit-stop');
+                event.stop();
+            }, {capture: true, passive: false});
+            event = fire(nativeType, outside);
+            t.is(order.join(','), 'explicit-stop', type + ' handler can still explicitly stop propagation');
+            t.ok(event.defaultPrevented, type + ' handler can still explicitly cancel the default action');
+            disconnectAll(parent);
+
+            order = [];
+            connect(parent, 'on' + type, function () { order.push('legacy'); });
+            event = fire(nativeType, outside);
+            t.is(order.join(','), 'child,legacy', type + ' default registration retains existing order');
+            t.ok(event.defaultPrevented, type + ' default registration retains legacy cancellation');
+            disconnectAll(parent);
+            disconnectAll(child);
+        }
+    } finally {
+        S._browserAlreadyHasMouseEnterAndLeave = detectsNativeEvents;
+        disconnectAll(parent);
+        disconnectAll(child);
+    }
+};
+
+tests.test_SignalEventAccessors = function (t) {
+    var E = MochiKit.Signal.Event;
+    var nativeEvent = {
+        type: 'keydown', key: '+', keyCode: 187, detail: 0,
+        isComposing: false, repeat: false, isTrusted: false,
+        defaultPrevented: false, persisted: false, dataTransfer: null
+    };
+    var event = new E(null, nativeEvent);
+    t.is(event.keyName(), '+', 'keyName returns the interpreted character');
+    t.is(event.key().code, 187, 'Legacy key code is unchanged');
+    t.is(event.key().string, 'KEY_EQUALS_SIGN', 'Legacy key names are unchanged');
+    t.is(event.detail(), 0, 'detail preserves zero');
+    t.ok(event.dataTransfer() === null, 'dataTransfer preserves null');
+    var flags = ['isComposing', 'repeat', 'isTrusted', 'defaultPrevented', 'persisted'];
+    for (var n = 0; n < flags.length; n++) {
+        var name = flags[n];
+        t.ok(event[name]() === false, name + ' preserves false');
+        nativeEvent[name] = true;
+        t.ok(event[name]() === true, name + ' reads the current native value');
+    }
+    nativeEvent.key = 'Z';
+    t.is(event.keyName(), 'Z', 'keyName does not lowercase the native key');
+    nativeEvent.key = '';
+    t.is(event.keyName(), '', 'keyName preserves an empty string');
+    nativeEvent.key = 'Unidentified';
+    t.is(event.keyName(), 'Unidentified', 'keyName does not invent a legacy fallback');
+    nativeEvent.detail = 2;
+    t.is(event.detail(), 2, 'detail reads the current click count');
+    t.is(new E(null, {type: 'keydown', keyCode: 229}).key().code, 229,
+        'The legacy composition guard remains available');
+    var character = new E(null, {type: 'keypress', charCode: 43});
+    t.is(character.key().string, '+', 'Legacy keypress character decoding is unchanged');
+
+    var transfer = {dropEffect: 'none', files: []};
+    nativeEvent.dataTransfer = transfer;
+    t.ok(event.dataTransfer() === transfer, 'dataTransfer returns the original object');
+    event.dataTransfer().dropEffect = 'copy';
+    t.is(transfer.dropEffect, 'copy', 'The caller can still set native dropEffect');
+    var missing = new E(null, {});
+    var accessors = ['keyName', 'detail', 'isComposing', 'repeat', 'isTrusted',
+        'defaultPrevented', 'dataTransfer', 'persisted', 'pointer'];
+    for (var n = 0; n < accessors.length; n++) {
+        t.ok(missing[accessors[n]]() === undefined,
+            accessors[n] + ' preserves a missing native value');
+    }
+    var hidden = new E(null, {type: 'pagehide', persisted: true});
+    var shown = new E(null, {type: 'pageshow', persisted: false});
+    t.ok(hidden.persisted() === true, 'pagehide exposes persisted');
+    t.ok(shown.persisted() === false, 'pageshow exposes persisted');
+
+    var pointerTypes = ['pointerdown', 'pointermove', 'pointerup', 'pointercancel',
+        'pointerover', 'pointerout', 'pointerenter', 'pointerleave', 'pointerrawupdate',
+        'gotpointercapture', 'lostpointercapture'];
+    for (var n = 0; n < pointerTypes.length; n++) {
+        var pointerEvent = {
+            type: pointerTypes[n], pointerId: 0, pointerType: 'pen', isPrimary: false,
+            button: -1, buttons: 3, clientX: -2.5, clientY: 0,
+            pageX: 0, pageY: 4.75
+        };
+        var wrapped = new E(null, pointerEvent);
+        var pointer = wrapped.pointer();
+        t.is(pointer.id, 0, pointerTypes[n] + ' preserves pointerId zero');
+        t.is(pointer.type, 'pen', 'pointer.type is the device type, not the event type');
+        t.ok(pointer.isPrimary === false, 'pointer preserves a non-primary pointer');
+        t.is(pointer.button, -1, 'pointer.button preserves native numeric semantics');
+        t.is(pointer.buttons, 3, 'pointer.buttons preserves the pressed-button bitmask');
+        t.is(pointer.client.x, -2.5, 'pointer preserves negative fractional client coordinates');
+        t.is(pointer.client.y, 0, 'pointer preserves client zero');
+        t.is(pointer.page.x, 0, 'pointer preserves page zero');
+        t.is(pointer.page.y, 4.75, 'pointer preserves fractional page coordinates');
+        pointer.client.x = 123;
+        t.is(pointerEvent.clientX, -2.5, 'Changing the returned coordinate object does not change the event');
+        t.is(wrapped.pointer().client.x, -2.5, 'pointer returns native values on each call');
+        t.ok(wrapped.mouse() === undefined, 'Legacy mouse() is not extended or changed');
+    }
+    t.ok(new E(null, {type: 'mousemove', pointerId: 1}).pointer() === undefined,
+        'pointer does not classify ordinary mouse events as pointer events');
+    t.ok(new E(null, {type: 'click', pointerId: 1}).pointer() === undefined,
+        'pointer has an explicit pointer-event-name contract');
+    var sparse = new E(null, {type: 'pointermove'}).pointer();
+    t.ok(sparse.id === undefined && sparse.client.x === undefined && sparse.page.y === undefined,
+        'pointer does not fabricate absent coordinates or identifiers');
+
+    var immediateCalls = 0;
+    var propagationCalls = 0;
+    var preventCalls = 0;
+    var stoppable = {
+        type: 'click',
+        stopImmediatePropagation: function () {
+            t.ok(this === stoppable, 'Native immediate propagation method keeps its receiver');
+            immediateCalls++;
+        },
+        stopPropagation: function () { propagationCalls++; },
+        preventDefault: function () { preventCalls++; }
+    };
+    var stopEvent = new E(null, stoppable);
+    stopEvent.stopImmediatePropagation();
+    t.is(immediateCalls, 1, 'Immediate propagation delegates to the native method');
+    t.is(propagationCalls, 0, 'Native immediate propagation needs no extra stopPropagation call');
+    t.is(preventCalls, 0, 'Immediate propagation does not cancel the default action');
+    stopEvent.stop();
+    t.is(propagationCalls, 1, 'stop still calls stopPropagation');
+    t.is(preventCalls, 1, 'stop still calls preventDefault');
+    t.is(immediateCalls, 1, 'stop does not acquire immediate-propagation behavior');
+    delete stoppable.stopImmediatePropagation;
+    stopEvent.stopImmediatePropagation();
+    t.is(propagationCalls, 2, 'Missing native method falls back to stopPropagation');
+    var legacy = {type: 'click'};
+    new E(null, legacy).stopImmediatePropagation();
+    t.ok(legacy.cancelBubble === true, 'Old-browser fallback uses existing cancelBubble handling');
+
+    if (!document.createEvent || !document.addEventListener) {
+        return;
+    }
+    var parent = document.createElement('div');
+    var child = document.createElement('button');
+    parent.appendChild(child);
+    var fire = function () {
+        var native = document.createEvent('HTMLEvents');
+        native.initEvent('mochikiteventaccessors', true, true);
+        child.dispatchEvent(native);
+        return native;
+    };
+    var probe = document.createEvent('HTMLEvents');
+    if (typeof(probe.stopImmediatePropagation) == 'function') {
+        var order = [];
+        try {
+            connect(child, 'onmochikiteventaccessors', function (e) {
+                order.push('first');
+                e.stopImmediatePropagation();
+            }, {capture: true});
+            connect(child, 'onmochikiteventaccessors', function () { order.push('later-capture'); }, {capture: true});
+            connect(child, 'onmochikiteventaccessors', function () { order.push('later-bubble'); });
+            connect(parent, 'onmochikiteventaccessors', function () { order.push('parent'); });
+            var native = fire();
+            t.is(order.join(','), 'first', 'Native immediate propagation suppresses later listeners and ancestors');
+            t.ok(!native.defaultPrevented, 'Native immediate propagation leaves the default action uncanceled');
+        } finally {
+            disconnectAll(child);
+            disconnectAll(parent);
+        }
+    }
+    try {
+        connect(child, 'onmochikiteventaccessors', function (e) {
+            t.ok(e.defaultPrevented() === false, 'defaultPrevented starts false on a cancelable event');
+            e.preventDefault();
+            t.ok(e.defaultPrevented() === true, 'defaultPrevented observes preventDefault immediately');
+        }, {passive: false});
+        t.ok(fire().defaultPrevented === true, 'Wrapper cancellation reaches the native event');
+    } finally {
+        disconnectAll(child);
+    }
 };

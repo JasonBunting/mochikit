@@ -527,6 +527,66 @@ tests.test_Async = function () {
             is(value, "thenable value", "fromPromise thenable");
         });
     });
+    withLock("fromPromise Deferred fulfillment", function () {
+        var inner = new Deferred();
+        var d = fromPromise(Promise.resolve(inner));
+        var failure;
+        d.addErrback(function (error) {
+            failure = error;
+            return error;
+        });
+        // Use a separate completion signal so a regression reports a failure
+        // instead of leaving the entire test suite waiting on d.
+        var done = new Deferred();
+        Promise.resolve().then(function () {
+            is(d.state(), "error", "Deferred fulfillment does not leave the adapter pending");
+            ok(failure instanceof TypeError, "Deferred fulfillment reaches the errback as a TypeError");
+            is(inner.state(), "unfired", "Unsupported fulfillment leaves the inner Deferred alone");
+            d.addErrback(function () { return "recovered"; });
+            is(d.results[0], "recovered", "Deferred fulfillment failure allows errback recovery");
+            done.callback();
+        });
+        return done;
+    });
+    withLock("fromPromise Deferred rejection", function () {
+        var reason = new Deferred();
+        var d = fromPromise(Promise.reject(reason));
+        var failure;
+        d.addErrback(function (error) {
+            failure = error;
+            return error;
+        });
+        var done = new Deferred();
+        Promise.resolve().then(function () {
+            is(d.state(), "error", "Deferred rejection does not leave the adapter pending");
+            ok(failure instanceof GenericError, "Deferred rejection is wrapped like other non-Errors");
+            is(failure && failure.message, reason, "Wrapped rejection preserves the original reason");
+            done.callback();
+        });
+        return done;
+    });
+    withLock("fromPromise synchronous Deferred fulfillment", function () {
+        var unsupported = new Deferred();
+        return fromPromise({then: function (resolve) { resolve(unsupported); }})
+            .addErrback(function (error) {
+                ok(error instanceof TypeError, "Synchronous Deferred fulfillment also reports a TypeError");
+            });
+    });
+    withLock("fromPromise thrown Deferred", function () {
+        var unsupported = new Deferred();
+        return fromPromise({then: function () { throw unsupported; }})
+            .addErrback(function (error) {
+                ok(error instanceof GenericError, "A thenable throwing a Deferred reports a wrapped rejection");
+                is(error.message, unsupported, "Synchronous rejection preserves the thrown Deferred");
+            });
+    });
+    withLock("fromPromise Deferred callback chaining", function () {
+        return fromPromise(Promise.resolve(3))
+            .addCallback(function (value) { return succeed(value + 1); })
+            .addCallback(function (value) {
+                is(value, 4, "Returning a Deferred from a callback still chains normally");
+            });
+    });
     try {
         fromPromise(null);
         ok(false, "fromPromise rejects invalid input");

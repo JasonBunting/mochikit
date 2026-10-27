@@ -639,23 +639,27 @@ MochiKit.Async.fromPromise = function (promise) {
 
     var self = MochiKit.Async;
     var d = new self.Deferred();
+    var reject = function (error) {
+        if (d.state() == "unfired") {
+            // errback() rejects Deferred instances before wrapping non-Errors.
+            d.errback(error instanceof Error ? error : new self.GenericError(error));
+        }
+    };
     try {
         promise.then(
             function (value) {
                 if (d.state() == "unfired") {
-                    d.callback(value);
+                    if (value instanceof self.Deferred) {
+                        reject(new TypeError("fromPromise cannot fulfill with a Deferred; return it from a callback to chain it"));
+                    } else {
+                        d.callback(value);
+                    }
                 }
             },
-            function (error) {
-                if (d.state() == "unfired") {
-                    d.errback(error);
-                }
-            }
+            reject
         );
     } catch (error) {
-        if (d.state() == "unfired") {
-            d.errback(error);
-        }
+        reject(error);
     }
     return d;
 };

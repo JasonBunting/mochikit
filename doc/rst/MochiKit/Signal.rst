@@ -360,8 +360,9 @@ DOM Custom Event Object Reference
 
 :mochidef:`event()`:
 
-    The native event produced by the browser. You should not need to
-    use this.
+    The native event produced by the browser. Prefer the wrapper accessors
+    where they fit, but this remains a supported escape hatch for native
+    properties and APIs not exposed by the wrapper.
 
     *Availability*:
         Available in MochiKit 1.3.1+
@@ -412,6 +413,23 @@ DOM Custom Event Object Reference
         Available in MochiKit 1.3.1+
 
 
+:mochidef:`stopImmediatePropagation()`:
+
+    Calls the native ``stopImmediatePropagation()`` method, stopping
+    propagation and preventing later listeners in the current listener
+    invocation from running. It does not call ``preventDefault()``.
+
+    If the native method is unavailable, falls back to ``stopPropagation()``.
+    This is best-effort only: the fallback cannot suppress other listeners
+    in the same listener invocation. Existing ``stop()`` behavior is unchanged.
+
+    Do not use this method inside ``connectOnce()`` handlers: that helper
+    currently uses a second listener for cleanup, which immediate propagation
+    stopping can suppress. For a one-shot immediate-stopping handler, use
+    ``connect()`` and explicitly ``disconnect(ident)`` before calling this
+    method. This limitation also applies to calling the native method directly.
+
+
 :mochidef:`preventDefault()`:
 
     Works like W3C's `preventDefault()`_.
@@ -451,6 +469,90 @@ DOM Custom Event Object Reference
 
     *Availability*:
         Available in MochiKit 1.3.1+
+
+
+:mochidef:`keyName()`:
+
+    Returns the native event's ``key`` value unchanged. This is the
+    interpreted, layout-aware key, such as ``'+'``, ``'Z'``, or
+    ``'Enter'``. It is not a physical key position, and it is not
+    lowercased or translated to legacy ``KEY_*`` names.
+
+    Returns ``undefined`` when the native property is absent.
+    The existing ``key().code`` and ``key().string`` behavior is unchanged.
+
+
+:mochidef:`detail()`:
+
+    Returns the native ``detail`` value unchanged, or ``undefined``
+    when absent. For click events this provides the click count,
+    including zero for keyboard activation.
+
+
+:mochidef:`isComposing()`:
+
+    Returns the native ``isComposing`` value unchanged, or
+    ``undefined`` when absent. This does not infer composition
+    from legacy key codes or maintain composition state.
+
+
+:mochidef:`repeat()`:
+
+    Returns the native ``repeat`` value unchanged, or ``undefined``
+    when absent. Shortcut and repeated-key policies belong in the handler.
+
+
+:mochidef:`isTrusted()`:
+
+    Returns the native ``isTrusted`` value unchanged, or ``undefined``
+    when absent. This is event metadata, not an authorization mechanism.
+
+
+:mochidef:`defaultPrevented()`:
+
+    Returns the native ``defaultPrevented`` value unchanged, or
+    ``undefined`` when absent. The value is read on every call,
+    so it reflects subsequent successful calls to ``preventDefault()``.
+    No cancellation state is synthesized for legacy browsers.
+
+
+:mochidef:`dataTransfer()`:
+
+    Returns the native ``dataTransfer`` object, or its native
+    ``null``/``undefined`` value. The object is not copied or frozen:
+    callers may still set ``dataTransfer().dropEffect``, for example.
+    It is not nested in ``mouse()``.
+
+
+:mochidef:`persisted()`:
+
+    Returns the native ``persisted`` value from ``pageshow`` or
+    ``pagehide`` unchanged, or ``undefined`` when absent.
+    As with the other scalar accessors, this reads the native property
+    directly rather than gating it by event type.
+
+
+:mochidef:`pointer()`:
+
+    Returns ``{id, type, isPrimary, button, buttons, client, page}``
+    for event types beginning with ``pointer``, plus
+    ``gotpointercapture`` and ``lostpointercapture``.
+    Returns ``undefined`` for other event types, including ``click``,
+    even if the browser supplies pointer properties on that event.
+
+    - ``id`` and ``type`` are native ``pointerId`` and
+      ``pointerType``; ``type`` describes the device, not the event name.
+    - ``isPrimary`` is the native primary-pointer flag.
+    - ``button`` is the native numeric changed-button value.
+      ``buttons`` is the native pressed-button bitmask, not the
+      ``{left, right, middle}`` object returned by ``mouse().button``.
+    - ``client`` is ``{x: clientX, y: clientY}``.
+    - ``page`` is ``{x: pageX, y: pageY}``.
+
+    Coordinates are copied without rounding, clamping, or scroll-offset
+    synthesis. Zero, negative and fractional values are preserved;
+    missing native fields remain ``undefined``. Each call returns a
+    fresh object. Existing ``mouse()`` behavior is unchanged.
 
 
 :mochidef:`mouse()`:
@@ -523,10 +625,15 @@ DOM Custom Event Object Reference
 
 :mochidef:`confirmUnload(msg)`:
 
-    In browsers that support the ``'onbeforeunload'`` event (IE and
-    Firefox), calling this in the event handler will show a dialog box
-    that allows the user to confirm or cancel the navigation away from
-    the page.
+    For a ``beforeunload`` event, assigns ``msg`` to the native
+    ``returnValue`` property without browser-specific detection.
+    It does nothing for other event types.
+
+    Browsers control whether a confirmation dialog is shown and generally
+    display their own message rather than the supplied text. A prompt is
+    not guaranteed. Modern handlers should call ``preventDefault()``;
+    ``confirmUnload(msg)`` can additionally set ``returnValue`` for
+    legacy compatibility. This method's behavior has not changed.
 
     *Availability*:
         Available in MochiKit 1.4+

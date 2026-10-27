@@ -724,6 +724,12 @@ Functions
     :mochiref:`Deferred`. Promise fulfillment starts the callback chain and
     Promise rejection starts the errback chain.
 
+    As with ``Deferred.callback()``, fulfillment with a ``Deferred`` is not
+    supported. The adapter reports this through its errback chain with a
+    ``TypeError`` instead of remaining pending. Return a ``Deferred`` from
+    an ``addCallback()`` handler to chain it. Non-Error rejection reasons,
+    including ``Deferred`` objects, are wrapped in :mochiref:`GenericError`.
+
     Cancelling the returned ``Deferred`` does not cancel the underlying
     Promise. If the Promise settles after cancellation, its result is ignored.
 

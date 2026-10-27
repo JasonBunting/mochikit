@@ -100,6 +100,65 @@ MochiKit.Base.update(MochiKit.Signal.Event.prototype, {
         return this._event.target || this._event.srcElement;
     },
 
+    /** @id MochiKit.Signal.Event.prototype.detail */
+    detail: function () {
+        return this._event.detail;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.keyName */
+    keyName: function () {
+        return this._event.key;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.isComposing */
+    isComposing: function () {
+        return this._event.isComposing;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.repeat */
+    repeat: function () {
+        return this._event.repeat;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.isTrusted */
+    isTrusted: function () {
+        return this._event.isTrusted;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.defaultPrevented */
+    defaultPrevented: function () {
+        return this._event.defaultPrevented;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.dataTransfer */
+    dataTransfer: function () {
+        return this._event.dataTransfer;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.persisted */
+    persisted: function () {
+        return this._event.persisted;
+    },
+
+    /** @id MochiKit.Signal.Event.prototype.pointer */
+    pointer: function () {
+        var type = this.type();
+        if (type && (type.indexOf('pointer') === 0 ||
+                type === 'gotpointercapture' || type === 'lostpointercapture')) {
+            var e = this._event;
+            return {
+                id: e.pointerId,
+                type: e.pointerType,
+                isPrimary: e.isPrimary,
+                button: e.button,
+                buttons: e.buttons,
+                client: {x: e.clientX, y: e.clientY},
+                page: {x: e.pageX, y: e.pageY}
+            };
+        }
+        return undefined;
+    },
+
     _relatedTarget: null,
     /** @id MochiKit.Signal.Event.prototype.relatedTarget */
     relatedTarget: function () {
@@ -369,6 +428,16 @@ MochiKit.Base.update(MochiKit.Signal.Event.prototype, {
         }
     },
 
+    /** @id MochiKit.Signal.Event.prototype.stopImmediatePropagation */
+    stopImmediatePropagation: function () {
+        if (typeof(this._event.stopImmediatePropagation) == 'function') {
+            this._event.stopImmediatePropagation();
+        } else {
+            // Best effort only: stopPropagation cannot suppress other listeners on the same node.
+            this.stopPropagation();
+        }
+    },
+
     /** @id MochiKit.Signal.Event.prototype.preventDefault */
     preventDefault: function () {
         if (this._event.preventDefault) {
@@ -568,7 +637,7 @@ MochiKit.Base.update(MochiKit.Signal, {
         return /Gecko\//.test(navigator.userAgent);
     },
 
-    _mouseEnterListener: function (src, sig, func, obj) {
+    _mouseEnterListener: function (src, sig, func, obj, capture) {
         var E = MochiKit.Signal.Event;
         return function (nativeEvent) {
             var e = new E(src, nativeEvent);
@@ -581,7 +650,11 @@ MochiKit.Base.update(MochiKit.Signal, {
                  */
                 return;
             }
-            e.stop();
+            // During capture, stopping here would prevent the native event
+            // from reaching descendants, even when this wrapper ignores it.
+            if (!capture) {
+                e.stop();
+            }
             if (MochiKit.DOM.isChildNode(e.relatedTarget(), src)) {
                 /* We've moved between our node and a child. Ignore. */
                 return;
@@ -685,7 +758,7 @@ MochiKit.Base.update(MochiKit.Signal, {
 
         if (isDOM && (sig === "onmouseenter" || sig === "onmouseleave")
                   && !self._browserAlreadyHasMouseEnterAndLeave()) {
-            var listener = self._mouseEnterListener(src, sig.substr(2), func, obj);
+            var listener = self._mouseEnterListener(src, sig.substr(2), func, obj, capture);
             if (sig === "onmouseenter") {
                 sig = "onmouseover";
             } else {
