@@ -212,7 +212,7 @@ API Reference
 Signal API Reference
 --------------------
 
-:mochidef:`connect(src, signal, dest[, func])`:
+:mochidef:`connect(src, signal, dest[, func][, options])`:
 
     Connects a signal to a slot, and return a unique identifier that
     can be used to disconnect that signal.
@@ -243,6 +243,35 @@ Signal API Reference
 
     No other combinations are allowed and will raise an exception.
 
+    For DOM events, an optional final ``options`` object configures the
+    native listener. It may be the fourth argument when ``dest`` is a
+    function, or the fifth argument when ``dest`` and ``func`` specify
+    an object and method::
+
+        connect(element, 'ontouchmove', handler, {passive: true});
+        connect(element, 'onwheel', handler, {passive: false});
+        connect(element, 'onclick', controller, 'handleClick', {capture: true});
+
+    The supported options are:
+
+        -   ``capture``: If true, listen during the capture phase. Defaults
+            to false. The capture setting is retained for disconnection,
+            even if the caller later changes the options object.
+
+        -   ``passive``: If true, the handler promises not to cancel the
+            native event; calling ``preventDefault()`` (including through
+            ``stop()``) will not cancel it. Explicit false requests a
+            non-passive listener. If omitted, the browser's default applies.
+
+    Calls without options retain their existing behavior. Browsers without
+    passive-listener support ignore ``passive`` and still honor ``capture``.
+    Browsers using ``attachEvent`` ignore both options. Options configure
+    DOM listeners only; non-DOM ``__connect__`` arguments remain unchanged.
+
+    Native ``once`` and ``signal`` options raise an exception because
+    automatic native removal would bypass MochiKit's connection bookkeeping.
+    Use :mochiref:`connectOnce()` or :mochiref:`disconnect()` instead.
+
     The return value can be passed to :mochiref:`disconnect` to
     disconnect the signal.
 
@@ -255,10 +284,13 @@ Signal API Reference
         Available in MochiKit 1.3.1+
 
 
-:mochidef:`connectOnce(src, signal, dest[, func])`:
+:mochidef:`connectOnce(src, signal, dest[, func][, options])`:
 
     Similar to :mochiref:`connect()`, but disconnects the signal
     handler automatically once it has fired.
+
+    Accepts the same DOM listener options as :mochiref:`connect()`, including
+    capture-phase handling of non-bubbling events.
 
     The return value can be passed to :mochiref:`disconnect` to
     disconnect the signal handler (before it has fired).

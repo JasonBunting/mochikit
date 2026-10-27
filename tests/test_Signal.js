@@ -581,4 +581,158 @@ tests.test_Signal = function (t) {
     signal(src, 'signal', 'first');
     t.is(sink.ev, 'dummy', 'connectOnce was disconnected properly');
 
+    tests.test_SignalListenerOptions(t);
+};
+
+tests.test_SignalListenerOptions = function (t) {
+    var S = MochiKit.Signal;
+    var registered;
+    var removed;
+    var source = {
+        addEventListener: function (type, listener, options) {
+            registered = {type: type, listener: listener, options: options};
+        },
+        removeEventListener: function (type, listener, capture) {
+            removed = {type: type, listener: listener, capture: capture};
+        }
+    };
+    var handler = function () {};
+    var ident = connect(source, 'onclick', handler);
+    t.is(registered.options, false, 'Existing calls retain boolean false registration');
+    disconnect(ident);
+    t.is(removed.capture, false, 'Existing calls retain bubble-phase removal');
+
+    var supportsPassive = S._supportsPassiveEvents();
+    var options = {capture: true, passive: false};
+    ident = connect(source, 'onclick', handler, options);
+    var listener = registered.listener;
+    options.capture = false;
+    disconnect(ident);
+    t.ok(removed.listener === listener, 'Disconnect removes the registered listener');
+    t.is(removed.capture, true, 'Disconnect retains capture after caller mutates options');
+    if (supportsPassive) {
+        t.is(registered.options.passive, false, 'Explicit passive false is preserved');
+        t.is(registered.options.capture, true, 'Registration uses a snapshot of options');
+        ident = connectOnce(source, 'ontouchmove', handler, {capture: true, passive: true});
+        t.is(registered.options.passive, true, 'connectOnce cleanup listener is also passive');
+        t.is(registered.options.capture, true, 'connectOnce cleanup uses the same capture phase');
+        registered.listener({type: 'touchmove'});
+        t.ok(!ident.connected, 'Passive connectOnce cleanup disconnects the handler');
+    }
+
+    // Exercise the boolean-only browser fallback even on modern browsers.
+    try {
+        S._passiveEventsSupported = false;
+        ident = connect(source, 'onclick', handler, {passive: true});
+        t.is(registered.options, false, 'Legacy fallback does not accidentally enable capture');
+        disconnect(ident);
+        ident = connect(source, 'onclick', handler, {capture: true, passive: true});
+        t.is(registered.options, true, 'Legacy fallback preserves capture');
+        disconnect(ident);
+        t.is(removed.capture, true, 'Legacy capture listener can be removed');
+    } finally {
+        S._passiveEventsSupported = supportsPassive;
+    }
+
+    var unsupported = [{once: true}, {signal: {}}, true];
+    for (var n = 0; n < unsupported.length; n++) {
+        var observerCount = S._observers.length;
+        registered = null;
+        var threw = false;
+        try {
+            connect(source, 'onclick', handler, undefined, unsupported[n]);
+        } catch (e) {
+            threw = true;
+        }
+        t.ok(threw, 'Unsupported listener options are rejected');
+        t.is(registered, null, 'Invalid options do not register a native listener');
+        t.is(S._observers.length, observerCount, 'Invalid options do not add an observer');
+    }
+
+    var hookArguments;
+    var customSource = {__connect__: function () { hookArguments = arguments; }};
+    var customOptions = {custom: true};
+    ident = connect(customSource, 'test', handler, undefined, customOptions);
+    t.ok(hookArguments[4] === customOptions, 'Non-DOM __connect__ arguments are preserved');
+    disconnect(ident);
+
+    if (!document.createEvent || !document.addEventListener) {
+        return;
+    }
+    var parent = document.createElement('div');
+    var child = document.createElement('button');
+    parent.appendChild(child);
+    var fire = function (bubbles) {
+        var event = document.createEvent('HTMLEvents');
+        event.initEvent('mochikitoptions', bubbles, true);
+        child.dispatchEvent(event);
+        return event;
+    };
+    var order = [];
+    var receiver = {handle: function (event) {
+        t.ok(this === receiver, 'Options preserve object-method binding');
+        t.ok(event instanceof S.Event, 'Options preserve MochiKit event wrapping');
+        order.push('capture');
+    }};
+    var captureIdent = connect(parent, 'onmochikitoptions', receiver, 'handle', {capture: true});
+    var bubbleIdent = connect(parent, 'onmochikitoptions', function () { order.push('bubble'); });
+    var targetIdent = connect(child, 'onmochikitoptions', function () {
+        t.ok(this === child, 'Options preserve standalone handler binding');
+        order.push('target');
+    }, {passive: true});
+    fire(true);
+    t.is(order.join(','), 'capture,target,bubble', 'Capture options control propagation order');
+    disconnect(captureIdent);
+    order = [];
+    fire(true);
+    t.is(order.join(','), 'target,bubble', 'Disconnect removes a real capture listener');
+    disconnect(bubbleIdent);
+    disconnect(targetIdent);
+
+    receiver.handle = function () { this.calls++; };
+    receiver.calls = 0;
+    ident = connect(parent, 'onmochikitoptions', receiver, receiver.handle, {capture: true});
+    fire(false);
+    t.is(receiver.calls, 1, 'Object/function form accepts options');
+    disconnectAllTo(receiver);
+    fire(false);
+    t.is(receiver.calls, 1, 'disconnectAllTo removes capture listeners');
+
+    var calls = 0;
+    ident = connect(parent, 'onmochikitoptions', function () { calls++; }, {capture: true});
+    signal(parent, 'onmochikitoptions');
+    t.is(calls, 1, 'Manual signal works with standalone handler options');
+    disconnectAll(parent);
+    fire(false);
+    t.is(calls, 1, 'disconnectAll removes capture listeners');
+
+    var onceObservers = S._observers.length;
+    ident = connectOnce(parent, 'onmochikitoptions', function () { calls++; }, {capture: true});
+    fire(false);
+    fire(false);
+    t.is(calls, 2, 'connectOnce captures a non-bubbling event only once');
+    t.ok(!ident.connected, 'connectOnce updates connection state');
+    t.is(S._observers.length, onceObservers, 'connectOnce removes its capture cleanup listener');
+
+    ident = connectOnce(parent, 'onmochikitoptions', receiver, 'handle', {capture: true});
+    fire(false);
+    fire(false);
+    t.is(receiver.calls, 2, 'connectOnce object-method form accepts options');
+
+    if (supportsPassive) {
+        var prevent = function (event) { event.preventDefault(); };
+        ident = connect(child, 'onmochikitoptions', prevent, {passive: true});
+        t.ok(!fire(true).defaultPrevented, 'Passive handler cannot cancel the native event');
+        disconnect(ident);
+        ident = connect(child, 'onmochikitoptions', prevent, {passive: false});
+        t.ok(fire(true).defaultPrevented, 'Explicitly non-passive handler can cancel the native event');
+        disconnect(ident);
+    }
+
+    var submitCalls = 0;
+    ident = connect('submit', 'onclick', function () { submitCalls++; }, {capture: true});
+    document.getElementById('submit').click();
+    disconnect(ident);
+    document.getElementById('submit').click();
+    t.is(submitCalls, 1, 'Element IDs accept listener options and disconnect correctly');
 };

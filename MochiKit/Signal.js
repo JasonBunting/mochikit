@@ -496,6 +496,8 @@ MochiKit.Signal.Ident = function (ident) {
     this.objOrFunc = ident.objOrFunc;
     this.funcOrStr = ident.funcOrStr;
     this.connected = ident.connected;
+    this.capture = !!ident.capture;
+    this.passive = ident.passive;
 };
 MochiKit.Signal.Ident.__export__ = false;
 MochiKit.Signal.Ident.prototype = {};
@@ -614,8 +616,44 @@ MochiKit.Base.update(MochiKit.Signal, {
         return [obj, func];
     },
 
+    _supportsPassiveEvents: function () {
+        var self = MochiKit.Signal;
+        if (typeof(self._passiveEventsSupported) == 'undefined') {
+            self._passiveEventsSupported = false;
+            var listener = function () {};
+            try {
+                var options = Object.defineProperty({}, 'passive', {
+                    get: function () { self._passiveEventsSupported = true; }
+                });
+                self._window.addEventListener('mochikitPassiveTest', listener, options);
+                self._window.removeEventListener('mochikitPassiveTest', listener, options);
+            } catch (e) {
+                // Older browsers accept only a boolean capture argument.
+            }
+        }
+        return self._passiveEventsSupported;
+    },
+
+    _getListenerOptions: function (options) {
+        if (typeof(options) == 'undefined' || options === null) {
+            return false;
+        }
+        if (typeof(options) != 'object') {
+            throw new Error("'options' must be an object");
+        }
+        if ('once' in options || 'signal' in options) {
+            throw new Error("'once' and 'signal' options are not supported; use connectOnce() or disconnect()");
+        }
+        var capture = !!options.capture;
+        if (typeof(options.passive) != 'undefined' &&
+                MochiKit.Signal._supportsPassiveEvents()) {
+            return {capture: capture, passive: !!options.passive};
+        }
+        return capture;
+    },
+
     /** @id MochiKit.Signal.connect */
-    connect: function (src, sig, objOrFunc/* optional */, funcOrStr) {
+    connect: function (src, sig, objOrFunc/* optional */, funcOrStr, options) {
         if (typeof(src) == "string") {
             src = MochiKit.DOM.getElement(src);
         }
@@ -625,14 +663,26 @@ MochiKit.Base.update(MochiKit.Signal, {
             throw new Error("'sig' must be a string");
         }
 
-        var destPair = self._getDestPair(objOrFunc, funcOrStr);
+        var isDOM = !!(src.addEventListener || src.attachEvent);
+        var destFunc = funcOrStr;
+        var listenerOptions = false;
+        if (isDOM) {
+            if (typeof(objOrFunc) == 'function' && funcOrStr !== null &&
+                    typeof(funcOrStr) == 'object' && typeof(options) == 'undefined') {
+                options = funcOrStr;
+                destFunc = undefined;
+            }
+            listenerOptions = self._getListenerOptions(options);
+        }
+        var capture = typeof(listenerOptions) == 'object' ?
+            listenerOptions.capture : listenerOptions;
+        var destPair = self._getDestPair(objOrFunc, destFunc);
         var obj = destPair[0];
         var func = destPair[1];
         if (typeof(obj) == 'undefined' || obj === null) {
             obj = src;
         }
 
-        var isDOM = !!(src.addEventListener || src.attachEvent);
         if (isDOM && (sig === "onmouseenter" || sig === "onmouseleave")
                   && !self._browserAlreadyHasMouseEnterAndLeave()) {
             var listener = self._mouseEnterListener(src, sig.substr(2), func, obj);
@@ -649,7 +699,7 @@ MochiKit.Base.update(MochiKit.Signal, {
         }
 
         if (src.addEventListener) {
-            src.addEventListener(sig.substr(2), listener, false);
+            src.addEventListener(sig.substr(2), listener, listenerOptions);
         } else if (src.attachEvent) {
             src.attachEvent(sig, listener); // useCapture unsupported
         }
@@ -660,7 +710,9 @@ MochiKit.Base.update(MochiKit.Signal, {
             listener: listener, 
             isDOM: isDOM, 
             objOrFunc: objOrFunc, 
-            funcOrStr: funcOrStr, 
+            funcOrStr: destFunc,
+            capture: capture,
+            passive: typeof(listenerOptions) == 'object' ? listenerOptions.passive : undefined,
             connected: true
         });
         self._observers.push(ident);
@@ -674,14 +726,19 @@ MochiKit.Base.update(MochiKit.Signal, {
     },
 
     /** @id MochiKit.Signal.connectOnce */
-    connectOnce: function (src, sig, objOrFunc/* optional */, funcOrStr) {
+    connectOnce: function (src, sig, objOrFunc/* optional */, funcOrStr, options) {
         var self = MochiKit.Signal;
-        var ident1 = self.connect(src, sig, objOrFunc, funcOrStr);
+        var ident1 = typeof(options) == 'undefined' ?
+            self.connect(src, sig, objOrFunc, funcOrStr) :
+            self.connect(src, sig, objOrFunc, funcOrStr, options);
         var ident2;
-        ident2 = self.connect(src, sig, function() {
+        var disconnectOnce = function() {
             self.disconnect(ident1);
             self.disconnect(ident2);
-        });
+        };
+        ident2 = ident1.isDOM ? self.connect(src, sig, disconnectOnce,
+            {capture: ident1.capture, passive: ident1.passive}) :
+            self.connect(src, sig, disconnectOnce);
         return ident1;
     },
 
@@ -702,7 +759,7 @@ MochiKit.Base.update(MochiKit.Signal, {
             return;
         }
         if (src.removeEventListener) {
-            src.removeEventListener(sig.substr(2), listener, false);
+            src.removeEventListener(sig.substr(2), listener, ident.capture);
         } else if (src.detachEvent) {
             src.detachEvent(sig, listener); // useCapture unsupported
         } else {

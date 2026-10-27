@@ -194,7 +194,7 @@ called with the parameters to the signal.</li>
 <h2>Signal API Reference</h2>
 <p>
 <a name="fn-connect"></a>
-<a class="mochidef reference external" href="#fn-connect">connect(src, signal, dest[, func])</a>:</p>
+<a class="mochidef reference external" href="#fn-connect">connect(src, signal, dest[, func][, options])</a>:</p>
 <blockquote>
 <p>Connects a signal to a slot, and return a unique identifier that
 can be used to disconnect that signal.</p>
@@ -221,6 +221,35 @@ signalled.</li>
 </ul>
 </blockquote>
 <p>No other combinations are allowed and will raise an exception.</p>
+<p>For DOM events, an optional final <tt class="docutils literal">options</tt> object configures the
+native listener. It may be the fourth argument when <tt class="docutils literal">dest</tt> is a
+function, or the fifth argument when <tt class="docutils literal">dest</tt> and <tt class="docutils literal">func</tt> specify
+an object and method:</p>
+<pre class="literal-block">
+connect(element, 'ontouchmove', handler, {passive: true});
+connect(element, 'onwheel', handler, {passive: false});
+connect(element, 'onclick', controller, 'handleClick', {capture: true});
+</pre>
+<p>The supported options are:</p>
+<blockquote>
+<ul class="simple">
+<li><tt class="docutils literal">capture</tt>: If true, listen during the capture phase. Defaults
+to false. The capture setting is retained for disconnection,
+even if the caller later changes the options object.</li>
+<li><tt class="docutils literal">passive</tt>: If true, the handler promises not to cancel the
+native event; calling <tt class="docutils literal">preventDefault()</tt> (including through
+<tt class="docutils literal">stop()</tt>) will not cancel it. Explicit false requests a
+non-passive listener. If omitted, the browser's default applies.</li>
+</ul>
+</blockquote>
+<p>Calls without options retain their existing behavior. Browsers without
+passive-listener support ignore <tt class="docutils literal">passive</tt> and still honor <tt class="docutils literal">capture</tt>.
+Browsers using <tt class="docutils literal">attachEvent</tt> ignore both options. Options configure
+DOM listeners only; non-DOM <tt class="docutils literal">__connect__</tt> arguments remain unchanged.</p>
+<p>Native <tt class="docutils literal">once</tt> and <tt class="docutils literal">signal</tt> options raise an exception because
+automatic native removal would bypass MochiKit's connection bookkeeping.
+Use <a class="mochiref reference external" href="#fn-connectonce">connectOnce()</a> or
+<a class="mochiref reference external" href="#fn-disconnect">disconnect()</a> instead.</p>
 <p>The return value can be passed to <a class="mochiref reference external" href="#fn-disconnect">disconnect</a> to
 disconnect the signal.</p>
 <p>In MochiKit 1.4+, if <tt class="docutils literal">src</tt> is an object that has a <tt class="docutils literal">__connect__</tt>
@@ -234,10 +263,12 @@ the signal. DOM objects can not implement this feature.</p>
 </blockquote>
 <p>
 <a name="fn-connectonce"></a>
-<a class="mochidef reference external" href="#fn-connectonce">connectOnce(src, signal, dest[, func])</a>:</p>
+<a class="mochidef reference external" href="#fn-connectonce">connectOnce(src, signal, dest[, func][, options])</a>:</p>
 <blockquote>
 <p>Similar to <a class="mochiref reference external" href="#fn-connect">connect()</a>, but disconnects the signal
 handler automatically once it has fired.</p>
+<p>Accepts the same DOM listener options as <a class="mochiref reference external" href="#fn-connect">connect()</a>, including
+capture-phase handling of non-bubbling events.</p>
 <p>The return value can be passed to <a class="mochiref reference external" href="#fn-disconnect">disconnect</a> to
 disconnect the signal handler (before it has fired).</p>
 <dl class="docutils">
