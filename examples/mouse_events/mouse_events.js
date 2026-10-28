@@ -38,11 +38,12 @@ function stopPageFromScrolling( event ) {
 };
 
 function connectEvents(){
+  // These wheel handlers cancel scrolling, so request non-passive listeners.
   connect("show-mouse-event", "onmousemove", showMouseEvent);
   connect("show-mouse-event", "onmousedown", showMouseEvent);
   connect("show-mouse-event", "onmouseup", showMouseEvent);
-  connect("show-mouse-event", "onmousewheel", showMouseEvent);
-  connect("no-scroll-page", "onmousewheel", stopPageFromScrolling);
+  connect("show-mouse-event", "onmousewheel", showMouseEvent, {passive: false});
+  connect("no-scroll-page", "onmousewheel", stopPageFromScrolling, {passive: false});
 };
 
 connect(window, 'onload',

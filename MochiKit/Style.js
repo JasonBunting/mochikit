@@ -2,7 +2,9 @@
 
 MochiKit.Style 1.5
 
-See <https://mochi.github.io/mochikit/> for documentation, downloads, license, etc.
+Modified fork: <https://github.com/JasonBunting/mochikit>.
+See doc/html/MochiKit/ for this fork's API documentation and LICENSE.txt for terms.
+Original project: <https://github.com/mochi/mochikit>.
 
 (c) 2005-2006 Bob Ippolito, Beau Hartshorne.  All rights Reserved.
 

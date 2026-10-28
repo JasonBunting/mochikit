@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
 <title>MochiKit.Signal - Simple universal event handling</title>
 
 <link rel="stylesheet" href="../../../include/css/documentation.css" type="text/css" />
@@ -12,8 +11,13 @@
 <script type="text/javascript" src="../../js/toc.js"></script>
 </head>
 <body>
-<a href="https://mochi.github.io/mochikit"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit" /></a>
-<a class='indexlink' href='index.html'>Back to docs index</a>
+<a href="../../../index.html"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit fork home" /></a>
+<p class="fork-notice"><strong>Jason Bunting's MochiKit fork.</strong>
+These docs include changes beyond the original project.
+<a href="../../../README.md">Fork overview</a> ·
+<a href="../../../examples/index.html">Examples</a> ·
+<a href="https://github.com/JasonBunting/mochikit/issues">Report an issue</a></p>
+<a class="indexlink" href="index.html">Back to docs index</a>
 <div class="document">
 <div class="section" id="name">
 <h1>Name</h1>
@@ -81,11 +85,38 @@ to clean up IE's nasty memory leakage.</p>
 more on how that is handled and also how it is used in model/view
 programming at: <a class="reference external" href="http://doc.trolltech.com/">http://doc.trolltech.com/</a></p>
 </div>
+<div class="section" id="fork-additions">
+<h1>Fork additions</h1>
+<p>This fork adds <tt class="docutils literal">capture</tt> and <tt class="docutils literal">passive</tt> options to <a class="reference external mochiref" href="#fn-connect">connect</a>
+and <a class="reference external mochiref" href="#fn-connectonce">connectOnce</a>, plus the event accessors <a class="reference external mochiref" href="#fn-keyname">keyName</a>,
+<a class="reference external mochiref" href="#fn-iscomposing">isComposing</a>, <a class="reference external mochiref" href="#fn-repeat">repeat</a>, <a class="reference external mochiref" href="#fn-pointer">pointer</a>,
+<a class="reference external mochiref" href="#fn-datatransfer">dataTransfer</a>, <a class="reference external mochiref" href="#fn-detail">detail</a>, <a class="reference external mochiref" href="#fn-istrusted">isTrusted</a>,
+<a class="reference external mochiref" href="#fn-defaultprevented">defaultPrevented</a>, <a class="reference external mochiref" href="#fn-persisted">persisted</a>, and
+<a class="reference external mochiref" href="#fn-stopimmediatepropagation">stopImmediatePropagation</a>. These additions are not upstream 1.5 APIs.
+Existing <tt class="docutils literal">key()</tt>, <tt class="docutils literal">mouse()</tt>, and <tt class="docutils literal">stop()</tt> behavior is preserved.</p>
+<p>For example, observe pointer movement during capture without cancelling
+browser actions:</p>
+<pre class="literal-block">
+var listener = MochiKit.Signal.connect(document, &quot;onpointermove&quot;, function (e) {
+    var pointer = e.pointer();
+    if (pointer) {
+        MochiKit.DOM.replaceChildNodes(&quot;status&quot;,
+            pointer.type + &quot; at &quot; + pointer.client.x + &quot;, &quot; + pointer.client.y);
+    }
+}, {capture: true, passive: true});
+// When the observer is no longer needed:
+// MochiKit.Signal.disconnect(listener);
+</pre>
+<p>This example assumes an element with id <tt class="docutils literal">status</tt>. Accessors expose native
+values; unsupported properties remain <tt class="docutils literal">undefined</tt>. See the
+<a class="reference external" href="../../../examples/modern/index.html">runnable fork example</a> for keyboard,
+pointer, and listener-option demonstrations.</p>
+</div>
 <div class="section" id="dependencies">
 <h1>Dependencies</h1>
 <ul class="simple">
-<li><a class="mochiref reference external" href="Base.html">MochiKit.Base</a></li>
-<li><a class="mochiref reference external" href="DOM.html">MochiKit.DOM</a></li>
+<li><a class="reference external mochiref" href="Base.html">MochiKit.Base</a></li>
+<li><a class="reference external mochiref" href="DOM.html">MochiKit.DOM</a></li>
 </ul>
 </div>
 <div class="section" id="overview">
@@ -96,8 +127,8 @@ programming at: <a class="reference external" href="http://doc.trolltech.com/">h
 API. That means, no <tt class="docutils literal"><span class="pre">onclick=&quot;blah&quot;</span></tt>, no
 <tt class="docutils literal"><span class="pre">elem.addEventListener(...)</span></tt>, and certainly no
 <tt class="docutils literal"><span class="pre">elem.attachEvent(...)</span></tt>. This also means that
-<a class="mochiref reference external" href="DOM.html#fn-addtocallstack">MochiKit.DOM.addToCallStack</a> and
-<a class="mochiref reference external" href="DOM.html#fn-addloadevent">MochiKit.DOM.addLoadEvent</a> should not be used in
+<a class="reference external mochiref" href="DOM.html#fn-addtocallstack">MochiKit.DOM.addToCallStack</a> and
+<a class="reference external mochiref" href="DOM.html#fn-addloadevent">MochiKit.DOM.addLoadEvent</a> should not be used in
 combination with this module.</p>
 <p>Signals for DOM objects are named with the <tt class="docutils literal">'on'</tt> prefix, e.g.:
 <tt class="docutils literal">'onclick'</tt>, <tt class="docutils literal">'onkeyup'</tt>, etc.</p>
@@ -112,15 +143,14 @@ the event across all supported platforms and browsers, and provides
 many conveniences not available even in a correct W3C implementation.</p>
 <p>See the <a class="reference internal" href="#dom-custom-event-object-reference">DOM Custom Event Object Reference</a> for a detailed API
 description of this object.</p>
-<p>If you find that you're accessing the native event for any reason,
-create a <a class="reference external" href="http://trac.mochikit.com/newticket">new ticket</a> and we'll look into normalizing the behavior
-you're looking for.</p>
+<p>Use <a class="reference external mochiref" href="#fn-event">event</a> when a native property is not exposed by the wrapper.
+Suggestions for additional accessors belong in this fork's <a class="reference external" href="https://github.com/JasonBunting/mochikit/issues">issue tracker</a>.</p>
 </div>
 <div class="section" id="memory-usage">
 <h2>Memory Usage</h2>
-<p>Any object that has connected slots (via <a class="mochiref reference external" href="#fn-connect">connect()</a>) is
+<p>Any object that has connected slots (via <a class="reference external mochiref" href="#fn-connect">connect()</a>) is
 referenced by the Signal mechanism until it is disconnected via
-<a class="mochiref reference external" href="#fn-disconnect">disconnect()</a> or <a class="mochiref reference external" href="#fn-disconnectall">disconnectAll()</a>.</p>
+<a class="reference external mochiref" href="#fn-disconnect">disconnect()</a> or <a class="reference external mochiref" href="#fn-disconnectall">disconnectAll()</a>.</p>
 <p>Signal does not leak. It registers an <tt class="docutils literal">'onunload'</tt> event that
 disconnects all objects on the page when the browser leaves the
 page. However, memory usage will grow during the page view for every
@@ -128,7 +158,7 @@ connection made until it is disconnected. Even if the DOM object is
 removed from the document, it will still be referenced by Signal until
 it is explicitly disconnected.</p>
 <p>In order to conserve memory during the page view,
-<a class="mochiref reference external" href="#fn-disconnectall">disconnectAll()</a> any DOM elements that are about to be
+<a class="reference external mochiref" href="#fn-disconnectall">disconnectAll()</a> any DOM elements that are about to be
 removed from the document.</p>
 </div>
 <div class="section" id="synthesized-events">
@@ -171,7 +201,7 @@ the corresponding event in these browsers.</p>
 </div>
 <div class="section" id="using-signal-for-non-dom-objects">
 <h2>Using Signal for non-DOM objects</h2>
-<p>Signals are triggered with the <a class="mochiref reference external" href="#fn-signal">signal(src, 'signal', ...)</a>
+<p>Signals are triggered with the <a class="reference external mochiref" href="#fn-signal">signal(src, 'signal', ...)</a>
 function. Additional parameters passed to this are passed onto the
 connected slots. Explicit signals are not required for DOM events.</p>
 <p>Slots that are connected to a signal are called in the following
@@ -192,9 +222,7 @@ called with the parameters to the signal.</li>
 <h1>API Reference</h1>
 <div class="section" id="signal-api-reference">
 <h2>Signal API Reference</h2>
-<p>
-<a name="fn-connect"></a>
-<a class="mochidef reference external" href="#fn-connect">connect(src, signal, dest[, func][, options])</a>:</p>
+<p><a id="fn-connect" name="fn-connect"></a><a class="reference external mochidef" href="#fn-connect">connect(src, signal, dest[, func][, options])</a>:</p>
 <blockquote>
 <p>Connects a signal to a slot, and return a unique identifier that
 can be used to disconnect that signal.</p>
@@ -248,9 +276,8 @@ Browsers using <tt class="docutils literal">attachEvent</tt> ignore both options
 DOM listeners only; non-DOM <tt class="docutils literal">__connect__</tt> arguments remain unchanged.</p>
 <p>Native <tt class="docutils literal">once</tt> and <tt class="docutils literal">signal</tt> options raise an exception because
 automatic native removal would bypass MochiKit's connection bookkeeping.
-Use <a class="mochiref reference external" href="#fn-connectonce">connectOnce()</a> or
-<a class="mochiref reference external" href="#fn-disconnect">disconnect()</a> instead.</p>
-<p>The return value can be passed to <a class="mochiref reference external" href="#fn-disconnect">disconnect</a> to
+Use <a class="reference external mochiref" href="#fn-connectonce">connectOnce()</a> or <a class="reference external mochiref" href="#fn-disconnect">disconnect()</a> instead.</p>
+<p>The return value can be passed to <a class="reference external mochiref" href="#fn-disconnect">disconnect</a> to
 disconnect the signal.</p>
 <p>In MochiKit 1.4+, if <tt class="docutils literal">src</tt> is an object that has a <tt class="docutils literal">__connect__</tt>
 method, then <tt class="docutils literal">src.__connect__(ident, signal, objOrFunc, funcOrStr)</tt>
@@ -261,27 +288,23 @@ the signal. DOM objects can not implement this feature.</p>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-connectonce"></a>
-<a class="mochidef reference external" href="#fn-connectonce">connectOnce(src, signal, dest[, func][, options])</a>:</p>
+<p><a id="fn-connectonce" name="fn-connectonce"></a><a class="reference external mochidef" href="#fn-connectonce">connectOnce(src, signal, dest[, func][, options])</a>:</p>
 <blockquote>
-<p>Similar to <a class="mochiref reference external" href="#fn-connect">connect()</a>, but disconnects the signal
+<p>Similar to <a class="reference external mochiref" href="#fn-connect">connect()</a>, but disconnects the signal
 handler automatically once it has fired.</p>
-<p>Accepts the same DOM listener options as <a class="mochiref reference external" href="#fn-connect">connect()</a>, including
+<p>Accepts the same DOM listener options as <a class="reference external mochiref" href="#fn-connect">connect()</a>, including
 capture-phase handling of non-bubbling events.</p>
-<p>The return value can be passed to <a class="mochiref reference external" href="#fn-disconnect">disconnect</a> to
+<p>The return value can be passed to <a class="reference external mochiref" href="#fn-disconnect">disconnect</a> to
 disconnect the signal handler (before it has fired).</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-disconnect"></a>
-<a class="mochidef reference external" href="#fn-disconnect">disconnect(ident)</a>:</p>
+<p><a id="fn-disconnect" name="fn-disconnect"></a><a class="reference external mochidef" href="#fn-disconnect">disconnect(ident)</a>:</p>
 <blockquote>
 <p>To disconnect a signal, pass its ident returned by
-<a class="mochiref reference external" href="#fn-connect">connect()</a>.  This is similar to how the browser's
+<a class="reference external mochiref" href="#fn-connect">connect()</a>.  This is similar to how the browser's
 <tt class="docutils literal">setTimeout</tt> and <tt class="docutils literal">clearTimeout</tt> works.</p>
 <p>In MochiKit 1.4+, if the signal source is an object that has a
 <tt class="docutils literal">__disconnect__</tt> method, then
@@ -292,12 +315,10 @@ will be called. DOM objects can not implement this feature.</p>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-disconnectall"></a>
-<a class="mochidef reference external" href="#fn-disconnectall">disconnectAll(src[, signal, ...])</a>:</p>
+<p><a id="fn-disconnectall" name="fn-disconnectall"></a><a class="reference external mochidef" href="#fn-disconnectall">disconnectAll(src[, signal, ...])</a>:</p>
 <blockquote>
 <p>Removes a set of signals from <tt class="docutils literal">src</tt>, similar to calling
-<a class="mochiref reference external" href="#fn-disconnect">disconnect(ident)</a> for each one.</p>
+<a class="reference external mochiref" href="#fn-disconnect">disconnect(ident)</a> for each one.</p>
 <p><tt class="docutils literal">disconnectAll(src)</tt> removes all signals from src.</p>
 <p><tt class="docutils literal">disconnectAll(src, 'onmousedown', 'mySignal')</tt> will remove all
 <tt class="docutils literal">'onmousedown'</tt> and <tt class="docutils literal">'mySignal'</tt> signals from src.</p>
@@ -306,12 +327,10 @@ will be called. DOM objects can not implement this feature.</p>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-disconnectallto"></a>
-<a class="mochidef reference external" href="#fn-disconnectallto">disconnectAllTo(dest[, func])</a>:</p>
+<p><a id="fn-disconnectallto" name="fn-disconnectallto"></a><a class="reference external mochidef" href="#fn-disconnectallto">disconnectAllTo(dest[, func])</a>:</p>
 <blockquote>
 <p>Removes a set of signals connected to <tt class="docutils literal">dest</tt>, similar to calling
-<a class="mochiref reference external" href="#fn-disconnect">disconnect(ident)</a> for each one.</p>
+<a class="reference external mochiref" href="#fn-disconnect">disconnect(ident)</a> for each one.</p>
 <p><tt class="docutils literal">disconnectAllTo(dest)</tt> removes all signals connected to dest.</p>
 <p><tt class="docutils literal">disconnectAllTo(dest, func)</tt> will remove all
 signals connected to dest using func.</p>
@@ -320,13 +339,11 @@ signals connected to dest using func.</p>
 <dd>Available in MochiKit 1.4+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-signal"></a>
-<a class="mochidef reference external" href="#fn-signal">signal(src, signal, ...)</a>:</p>
+<p><a id="fn-signal" name="fn-signal"></a><a class="reference external mochidef" href="#fn-signal">signal(src, signal, ...)</a>:</p>
 <blockquote>
 <p>This will signal a signal, passing whatever additional parameters
 on to the connected slots. <tt class="docutils literal">src</tt> and <tt class="docutils literal">signal</tt> are the same as
-for <a class="mochiref reference external" href="#fn-connect">connect()</a>. Note that when using this function for
+for <a class="reference external mochiref" href="#fn-connect">connect()</a>. Note that when using this function for
 DOM signals, a single event argument is expected by most listeners
 (see DOM Custom Event Object Reference below).</p>
 <dl class="docutils">
@@ -338,20 +355,17 @@ MochiKit 1.5+</dd>
 </div>
 <div class="section" id="dom-custom-event-object-reference">
 <h2>DOM Custom Event Object Reference</h2>
-<p>
-<a name="fn-event"></a>
-<a class="mochidef reference external" href="#fn-event">event()</a>:</p>
+<p><a id="fn-event" name="fn-event"></a><a class="reference external mochidef" href="#fn-event">event()</a>:</p>
 <blockquote>
-<p>The native event produced by the browser. You should not need to
-use this.</p>
+<p>The native event produced by the browser. Prefer the wrapper accessors
+where they fit, but this remains a supported escape hatch for native
+properties and APIs not exposed by the wrapper.</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-src"></a>
-<a class="mochidef reference external" href="#fn-src">src()</a>:</p>
+<p><a id="fn-src" name="fn-src"></a><a class="reference external mochidef" href="#fn-src">src()</a>:</p>
 <blockquote>
 <p>The element that this signal is connected to.</p>
 <dl class="docutils">
@@ -359,9 +373,7 @@ use this.</p>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-type"></a>
-<a class="mochidef reference external" href="#fn-type">type()</a>:</p>
+<p><a id="fn-type" name="fn-type"></a><a class="reference external mochidef" href="#fn-type">type()</a>:</p>
 <blockquote>
 <p>The event type (<tt class="docutils literal">'click'</tt>, <tt class="docutils literal">'mouseover'</tt>, <tt class="docutils literal">'keypress'</tt>,
 etc.) as a string. Does not include the <tt class="docutils literal">'on'</tt> prefix.</p>
@@ -370,20 +382,16 @@ etc.) as a string. Does not include the <tt class="docutils literal">'on'</tt> p
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-target"></a>
-<a class="mochidef reference external" href="#fn-target">target()</a>:</p>
+<p><a id="fn-target" name="fn-target"></a><a class="reference external mochidef" href="#fn-target">target()</a>:</p>
 <blockquote>
 <p>The element that triggered the event. This may be a child of
-<a class="mochiref reference external" href="#fn-src">src()</a>.</p>
+<a class="reference external mochiref" href="#fn-src">src()</a>.</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-modifier"></a>
-<a class="mochidef reference external" href="#fn-modifier">modifier()</a>:</p>
+<p><a id="fn-modifier" name="fn-modifier"></a><a class="reference external mochidef" href="#fn-modifier">modifier()</a>:</p>
 <blockquote>
 <p>Returns <tt class="docutils literal">{shift, ctrl, meta, alt, any}</tt>, where each property is
 <tt class="docutils literal">true</tt> if its respective modifier key was pressed, <tt class="docutils literal">false</tt>
@@ -394,9 +402,7 @@ otherwise. <tt class="docutils literal">any</tt> is <tt class="docutils literal"
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-stoppropagation"></a>
-<a class="mochidef reference external" href="#fn-stoppropagation">stopPropagation()</a>:</p>
+<p><a id="fn-stoppropagation" name="fn-stoppropagation"></a><a class="reference external mochidef" href="#fn-stoppropagation">stopPropagation()</a>:</p>
 <blockquote>
 <p>Works like W3C's <a class="reference external" href="http://developer.mozilla.org/en/docs/DOM:event.stopPropagation">stopPropagation()</a>.</p>
 <dl class="docutils">
@@ -404,9 +410,21 @@ otherwise. <tt class="docutils literal">any</tt> is <tt class="docutils literal"
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-preventdefault"></a>
-<a class="mochidef reference external" href="#fn-preventdefault">preventDefault()</a>:</p>
+<p><a id="fn-stopimmediatepropagation" name="fn-stopimmediatepropagation"></a><a class="reference external mochidef" href="#fn-stopimmediatepropagation">stopImmediatePropagation()</a>:</p>
+<blockquote>
+<p>Calls the native <tt class="docutils literal">stopImmediatePropagation()</tt> method, stopping
+propagation and preventing later listeners in the current listener
+invocation from running. It does not call <tt class="docutils literal">preventDefault()</tt>.</p>
+<p>If the native method is unavailable, falls back to <tt class="docutils literal">stopPropagation()</tt>.
+This is best-effort only: the fallback cannot suppress other listeners
+in the same listener invocation. Existing <tt class="docutils literal">stop()</tt> behavior is unchanged.</p>
+<p>Do not use this method inside <tt class="docutils literal">connectOnce()</tt> handlers: that helper
+currently uses a second listener for cleanup, which immediate propagation
+stopping can suppress. For a one-shot immediate-stopping handler, use
+<tt class="docutils literal">connect()</tt> and explicitly <tt class="docutils literal">disconnect(ident)</tt> before calling this
+method. This limitation also applies to calling the native method directly.</p>
+</blockquote>
+<p><a id="fn-preventdefault" name="fn-preventdefault"></a><a class="reference external mochidef" href="#fn-preventdefault">preventDefault()</a>:</p>
 <blockquote>
 <p>Works like W3C's <a class="reference external" href="http://developer.mozilla.org/en/docs/DOM:event.preventDefault">preventDefault()</a>.</p>
 <dl class="docutils">
@@ -414,9 +432,7 @@ otherwise. <tt class="docutils literal">any</tt> is <tt class="docutils literal"
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-stop"></a>
-<a class="mochidef reference external" href="#fn-stop">stop()</a>:</p>
+<p><a id="fn-stop" name="fn-stop"></a><a class="reference external mochidef" href="#fn-stop">stop()</a>:</p>
 <blockquote>
 <p>Shortcut that calls <tt class="docutils literal">stopPropagation()</tt> and
 <tt class="docutils literal">preventDefault()</tt>.</p>
@@ -425,9 +441,7 @@ otherwise. <tt class="docutils literal">any</tt> is <tt class="docutils literal"
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-key"></a>
-<a class="mochidef reference external" href="#fn-key">key()</a>:</p>
+<p><a id="fn-key" name="fn-key"></a><a class="reference external mochidef" href="#fn-key">key()</a>:</p>
 <blockquote>
 <p>Returns <tt class="docutils literal">{code, string}</tt>.</p>
 <p>Use <tt class="docutils literal">'onkeydown'</tt> and <tt class="docutils literal">'onkeyup'</tt> handlers to detect control
@@ -447,19 +461,84 @@ of control characters.</p>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-mouse"></a>
-<a class="mochidef reference external" href="#fn-mouse">mouse()</a>:</p>
+<p><a id="fn-keyname" name="fn-keyname"></a><a class="reference external mochidef" href="#fn-keyname">keyName()</a>:</p>
+<blockquote>
+<p>Returns the native event's <tt class="docutils literal">key</tt> value unchanged. This is the
+interpreted, layout-aware key, such as <tt class="docutils literal">'+'</tt>, <tt class="docutils literal">'Z'</tt>, or
+<tt class="docutils literal">'Enter'</tt>. It is not a physical key position, and it is not
+lowercased or translated to legacy <tt class="docutils literal">KEY_*</tt> names.</p>
+<p>Returns <tt class="docutils literal">undefined</tt> when the native property is absent.
+The existing <tt class="docutils literal"><span class="pre">key().code</span></tt> and <tt class="docutils literal"><span class="pre">key().string</span></tt> behavior is unchanged.</p>
+</blockquote>
+<p><a id="fn-detail" name="fn-detail"></a><a class="reference external mochidef" href="#fn-detail">detail()</a>:</p>
+<blockquote>
+Returns the native <tt class="docutils literal">detail</tt> value unchanged, or <tt class="docutils literal">undefined</tt>
+when absent. For click events this provides the click count,
+including zero for keyboard activation.</blockquote>
+<p><a id="fn-iscomposing" name="fn-iscomposing"></a><a class="reference external mochidef" href="#fn-iscomposing">isComposing()</a>:</p>
+<blockquote>
+Returns the native <tt class="docutils literal">isComposing</tt> value unchanged, or
+<tt class="docutils literal">undefined</tt> when absent. This does not infer composition
+from legacy key codes or maintain composition state.</blockquote>
+<p><a id="fn-repeat" name="fn-repeat"></a><a class="reference external mochidef" href="#fn-repeat">repeat()</a>:</p>
+<blockquote>
+Returns the native <tt class="docutils literal">repeat</tt> value unchanged, or <tt class="docutils literal">undefined</tt>
+when absent. Shortcut and repeated-key policies belong in the handler.</blockquote>
+<p><a id="fn-istrusted" name="fn-istrusted"></a><a class="reference external mochidef" href="#fn-istrusted">isTrusted()</a>:</p>
+<blockquote>
+Returns the native <tt class="docutils literal">isTrusted</tt> value unchanged, or <tt class="docutils literal">undefined</tt>
+when absent. This is event metadata, not an authorization mechanism.</blockquote>
+<p><a id="fn-defaultprevented" name="fn-defaultprevented"></a><a class="reference external mochidef" href="#fn-defaultprevented">defaultPrevented()</a>:</p>
+<blockquote>
+Returns the native <tt class="docutils literal">defaultPrevented</tt> value unchanged, or
+<tt class="docutils literal">undefined</tt> when absent. The value is read on every call,
+so it reflects subsequent successful calls to <tt class="docutils literal">preventDefault()</tt>.
+No cancellation state is synthesized for legacy browsers.</blockquote>
+<p><a id="fn-datatransfer" name="fn-datatransfer"></a><a class="reference external mochidef" href="#fn-datatransfer">dataTransfer()</a>:</p>
+<blockquote>
+Returns the native <tt class="docutils literal">dataTransfer</tt> object, or its native
+<tt class="docutils literal">null</tt>/<tt class="docutils literal">undefined</tt> value. The object is not copied or frozen:
+callers may still set <tt class="docutils literal"><span class="pre">dataTransfer().dropEffect</span></tt>, for example.
+It is not nested in <tt class="docutils literal">mouse()</tt>.</blockquote>
+<p><a id="fn-persisted" name="fn-persisted"></a><a class="reference external mochidef" href="#fn-persisted">persisted()</a>:</p>
+<blockquote>
+Returns the native <tt class="docutils literal">persisted</tt> value from <tt class="docutils literal">pageshow</tt> or
+<tt class="docutils literal">pagehide</tt> unchanged, or <tt class="docutils literal">undefined</tt> when absent.
+As with the other scalar accessors, this reads the native property
+directly rather than gating it by event type.</blockquote>
+<p><a id="fn-pointer" name="fn-pointer"></a><a class="reference external mochidef" href="#fn-pointer">pointer()</a>:</p>
+<blockquote>
+<p>Returns <tt class="docutils literal">{id, type, isPrimary, button, buttons, client, page}</tt>
+for event types beginning with <tt class="docutils literal">pointer</tt>, plus
+<tt class="docutils literal">gotpointercapture</tt> and <tt class="docutils literal">lostpointercapture</tt>.
+Returns <tt class="docutils literal">undefined</tt> for other event types, including <tt class="docutils literal">click</tt>,
+even if the browser supplies pointer properties on that event.</p>
+<ul class="simple">
+<li><tt class="docutils literal">id</tt> and <tt class="docutils literal">type</tt> are native <tt class="docutils literal">pointerId</tt> and
+<tt class="docutils literal">pointerType</tt>; <tt class="docutils literal">type</tt> describes the device, not the event name.</li>
+<li><tt class="docutils literal">isPrimary</tt> is the native primary-pointer flag.</li>
+<li><tt class="docutils literal">button</tt> is the native numeric changed-button value.
+<tt class="docutils literal">buttons</tt> is the native pressed-button bitmask, not the
+<tt class="docutils literal">{left, right, middle}</tt> object returned by <tt class="docutils literal"><span class="pre">mouse().button</span></tt>.</li>
+<li><tt class="docutils literal">client</tt> is <tt class="docutils literal">{x: clientX, y: clientY}</tt>.</li>
+<li><tt class="docutils literal">page</tt> is <tt class="docutils literal">{x: pageX, y: pageY}</tt>.</li>
+</ul>
+<p>Coordinates are copied without rounding, clamping, or scroll-offset
+synthesis. Zero, negative and fractional values are preserved;
+missing native fields remain <tt class="docutils literal">undefined</tt>. Each call returns a
+fresh object. Existing <tt class="docutils literal">mouse()</tt> behavior is unchanged.</p>
+</blockquote>
+<p><a id="fn-mouse" name="fn-mouse"></a><a class="reference external mochidef" href="#fn-mouse">mouse()</a>:</p>
 <blockquote>
 <p>Properties for <tt class="docutils literal">'onmouse*'</tt>, <tt class="docutils literal">'onclick'</tt>, <tt class="docutils literal">'ondblclick'</tt>,
 and <tt class="docutils literal">'oncontextmenu'</tt>:</p>
 <blockquote>
 <ul class="simple">
-<li><tt class="docutils literal">page</tt> is similar to a <a class="mochiref reference external" href="Style.html#fn-coordinates">MochiKit.Style.Coordinates</a>
+<li><tt class="docutils literal">page</tt> is similar to a <a class="reference external mochiref" href="Style.html#fn-coordinates">MochiKit.Style.Coordinates</a>
 object with <tt class="docutils literal">x</tt> and <tt class="docutils literal">y</tt> properties that represent the cursor
 position relative to the HTML document.  Equivalent to
 <tt class="docutils literal">pageX</tt> and <tt class="docutils literal">pageY</tt> in Safari, Mozilla, and Opera.</li>
-<li><tt class="docutils literal">client</tt> is similar to a <a class="mochiref reference external" href="Style.html#fn-coordinates">MochiKit.Style.Coordinates</a>
+<li><tt class="docutils literal">client</tt> is similar to a <a class="reference external mochiref" href="Style.html#fn-coordinates">MochiKit.Style.Coordinates</a>
 object with <tt class="docutils literal">x</tt> and <tt class="docutils literal">y</tt> properties that represent the cursor
 position relative to the visible portion of the HTML document.
 Equivalent to <tt class="docutils literal">clientX</tt> and <tt class="docutils literal">clientY</tt> on all browsers.
@@ -481,7 +560,7 @@ each property is <tt class="docutils literal">true</tt> if the mouse button was 
 <blockquote>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">mouse().wheel</span></tt> is similar to a
-<a class="mochiref reference external" href="Style.html#fn-coordinates">MochiKit.Style.Coordinates</a> object with <tt class="docutils literal">x</tt> and
+<a class="reference external mochiref" href="Style.html#fn-coordinates">MochiKit.Style.Coordinates</a> object with <tt class="docutils literal">x</tt> and
 <tt class="docutils literal">y</tt> properties that contain the scroll wheel offset. The
 number will be positive when scrolling down (or to the right)
 and negative when scrolling up (or to the left). Note that
@@ -516,9 +595,7 @@ work in Opera.</p>
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-relatedtarget"></a>
-<a class="mochidef reference external" href="#fn-relatedtarget">relatedTarget()</a>:</p>
+<p><a id="fn-relatedtarget" name="fn-relatedtarget"></a><a class="reference external mochidef" href="#fn-relatedtarget">relatedTarget()</a>:</p>
 <blockquote>
 <p>Returns the document element that the mouse has moved to. This is
 generated for <tt class="docutils literal">'onmouseover'</tt> and <tt class="docutils literal">'onmouseout'</tt> events.</p>
@@ -527,14 +604,16 @@ generated for <tt class="docutils literal">'onmouseover'</tt> and <tt class="doc
 <dd>Available in MochiKit 1.3.1+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-confirmunload"></a>
-<a class="mochidef reference external" href="#fn-confirmunload">confirmUnload(msg)</a>:</p>
+<p><a id="fn-confirmunload" name="fn-confirmunload"></a><a class="reference external mochidef" href="#fn-confirmunload">confirmUnload(msg)</a>:</p>
 <blockquote>
-<p>In browsers that support the <tt class="docutils literal">'onbeforeunload'</tt> event (IE and
-Firefox), calling this in the event handler will show a dialog box
-that allows the user to confirm or cancel the navigation away from
-the page.</p>
+<p>For a <tt class="docutils literal">beforeunload</tt> event, assigns <tt class="docutils literal">msg</tt> to the native
+<tt class="docutils literal">returnValue</tt> property without browser-specific detection.
+It does nothing for other event types.</p>
+<p>Browsers control whether a confirmation dialog is shown and generally
+display their own message rather than the supplied text. A prompt is
+not guaranteed. Modern handlers should call <tt class="docutils literal">preventDefault()</tt>;
+<tt class="docutils literal">confirmUnload(msg)</tt> can additionally set <tt class="docutils literal">returnValue</tt> for
+legacy compatibility. This method's behavior has not changed.</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.4+</dd>

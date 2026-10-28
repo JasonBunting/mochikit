@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modern APIs · MochiKit fork</title>
+  <style>
+    body {font: 16px/1.6 system-ui, sans-serif; color: #243444; background: #f4f6f8; margin: 0;}
+    main {max-width: 960px; margin: auto; padding: 32px 24px;}
+    h1, h2 {line-height: 1.2;} h2 {font-size: 1.25rem;}
+    a {color: #28608b;} section {background: white; padding: 24px; margin: 20px 0; border: 1px solid #d9e0e5; border-radius: 8px;}
+    button, input {font: inherit; padding: 8px 12px; margin: 4px;}
+    button {cursor: pointer;} output {display: block; padding: 12px; background: #f0f4f8; margin-top: 12px; min-height: 1.6em;}
+    #pointer-area {padding: 30px; border: 2px dashed #739bb9; margin-top: 12px;}
+    #drop-zone {padding: 20px; border: 2px dashed #739bb9;}
+    #drag-item {display: inline-block; padding: 8px 16px; background: #d5e9f7; cursor: grab; margin-bottom: 16px;}
+    .actions {display: flex; flex-wrap: wrap; gap: 4px;}
+    #drawing svg {max-width: 100%; height: auto;}
+    input {max-width: 100%; box-sizing: border-box;} output {overflow-wrap: anywhere;}
+  </style>
+  <script src="../../packed/MochiKit/MochiKit.js"></script>
+  <script src="modern.js" defer></script>
+</head>
+<body><main>
+  <p><a href="../index.html">Examples</a> / <a href="../../doc/html/MochiKit/index.html">API docs</a></p>
+  <h1>Modern APIs in the MochiKit fork</h1>
+  <p>This example uses Jason Bunting's fork and its packed bundle. These additions are not in upstream MochiKit 1.5.
+    <a href="modern.js">Read the JavaScript</a>.</p>
+  <section aria-labelledby="svg-title">
+    <h2 id="svg-title">SVG and semantic HTML</h2>
+    <div id="drawing"></div><div id="semantic"></div>
+    <p><a href="../../doc/html/MochiKit/DOM.html#fn-createsvg">SVG helpers</a> keep SVG elements in the correct namespace.</p>
+  </section>
+  <section aria-labelledby="promise-title">
+    <h2 id="promise-title">Promises in a Deferred chain</h2>
+    <p>Start a short operation, then optionally cancel its Deferred. Cancellation leaves the Promise running and ignores its later result.</p>
+    <div class="actions"><button id="resolve">Resolve</button><button id="reject">Reject</button><button id="cancel" disabled>Cancel Deferred</button></div>
+    <output id="promise-status" aria-live="polite">Ready.</output>
+  </section>
+  <section aria-labelledby="events-title">
+    <h2 id="events-title">Keyboard and pointer events</h2>
+    <label for="key-input">Type here, or hold a key:</label><input id="key-input" autocomplete="off">
+    <output id="key-status">Keyboard details appear here.</output>
+    <div id="pointer-area">Move a pointer here. <button id="capture-child">Click this child button</button></div>
+    <output id="pointer-status">Pointer details appear here.</output>
+    <output id="capture-status">The enclosing area's capture listener observes child clicks.</output>
+    <output id="page-status">Page transition details appear here.</output>
+  </section>
+  <section aria-labelledby="drag-title">
+    <h2 id="drag-title">Drag data through the event wrapper</h2>
+    <span id="drag-item" draggable="true">Drag this label</span>
+    <div id="drop-zone">Drop the label here.</div><output id="drop-status" aria-live="polite">Waiting for a drop.</output>
+  </section>
+  <section aria-labelledby="stop-title">
+    <h2 id="stop-title">Stop later listeners once</h2>
+    <p>The first click disconnects its own listener before calling <code>stopImmediatePropagation()</code>.
+      Later clicks reach the second listener. This uses <code>connect()</code>, because immediate stopping can suppress <code>connectOnce()</code>'s cleanup listener.</p>
+    <button id="stop-once">Try two clicks</button><output id="stop-status" aria-live="polite">Ready.</output>
+  </section>
+</main></body>
+</html>

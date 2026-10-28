@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>MochiKit Customizer</title>
+    <title>MochiKit Fork Customizer</title>
     <link type="text/css" rel="stylesheet" href="../../include/css/documentation.css" />
     <style type="text/css">
       h3 {
@@ -23,18 +23,18 @@
     <script type="text/javascript" src="MochiKit.js"></script>
   </head>
   <body>
-    <a href="https://mochi.github.io/mochikit/"><img id="mainlink" src="../../include/img/g_logo_doc.gif" alt="I &hearts; MochiKit" title="I &hearts; MochiKit" /></a>
+    <a href="https://github.com/JasonBunting/mochikit"><img id="mainlink" src="../../include/img/g_logo_doc.gif" alt="I &hearts; MochiKit" title="I &hearts; MochiKit" /></a>
     <div class="document">
       <div class="section">
-        <h1>MochiKit Customizer</h1>
+        <h1>MochiKit Fork Customizer</h1>
+        <p>Build a subset of this fork from the packed bundle served alongside this page.
+        Regenerate that bundle with <code>python scripts/pack.py</code> after changing source files.</p>
+        <p>Serve this checkout over HTTP to use the customizer.</p>
         <form id="form">
             <table>
                 <tbody>
                     <tr>
                         <td style="border-right: 1px solid rgb(204, 204, 204); padding-right: 10px;">
-                            <h3>Version:</h3>
-                            <select id="packVersions"></select>
-                            <hr style="margin-top: 20px;">
                             <h3>Module Sets:</h3>
                             <select id="packSets"></select>
                             <hr style="margin-top: 200px;">
@@ -57,11 +57,6 @@
     </div>
     <script type="text/javascript">
 
-// Versions available
-var VERSIONS = {
-    devel: { name: "Development" }
-}
-
 // Predefined module sets
 var SETS = {
     core: { name: "Non-Web Modules", deps: ["Base", "DateTime", "Format", "Text", "Iter"] },
@@ -72,73 +67,17 @@ var SETS = {
 // Module objects with dependencies and packed JS
 var MODULES = {};
 
-// Callback for version info
-function cbInit(res) {
-    res = res && res.data;
-    if (res && res[0] && res[0].commit) {
-        var sha = res[0].sha;
-        var dttm = res[0].commit.committer.date;
-        var name = "Development (" + dttm.substring(0, 10) + ")";
-        VERSIONS.devel = { name: name, ref: sha };
-    } else if (res && res.length > 0) {
-        for (var i = 0; i < res.length; i++) {
-            var ref = res[i].ref
-            var m = /\d+(\.\d+)*/.exec(ref);
-            if (m && m[0] >= "1.4.2") {
-                var id = m[0];
-                VERSIONS[id] = { name: "Version " + id, ref: ref };
-            }
-        }
-    }
-    if (VERSIONS.devel.ref && keys(VERSIONS).length > 1) {
-        if (!/http/.test(window.location.protocol)) {
-            VERSIONS.local = { name: "Local File (packed version)", ref: "" };
-        }
-        var ids = keys(VERSIONS).sort().reverse();
-        var versions = $("packVersions");
-        var idx = 0;
-        for (var i = 0; i < ids.length; i++) {
-            var id = ids[i];
-            var ver = VERSIONS[id];
-            versions.appendChild(OPTION({ value: ver.ref }, ver.name));
-            if (window.location.hash == "#" + id) {
-                idx = i;
-            }
-        }
-        versions.selectedIndex = idx;
-        doLoadSource(versions.options[idx].value);
-    }
-}
-
-// Loads the source code for a specified Git reference (commit/tag/branch)
-function doLoadSource(ref) {
+// Load this checkout's packed bundle, including any uncommitted rebuild.
+function doLoadSource() {
     replaceChildNodes($("packSets"));
     replaceChildNodes($("packModules"));
-    if (ref) {
-        MochiKit.Async.loadScript("https://api.github.com/repos/mochi/mochikit/contents/packed/MochiKit/MochiKit.js" +
-                                    "?ref=" + ref + "&callback=cbLoadSource");
-    } else {
-        var url = $$("head script[src*=MochiKit.js]")[0].src;
-        var d = doSimpleXMLHttpRequest(url);
-        d.addCallback(function (xhr) {
-            doParseSource(xhr.responseText);
-        });
-        d.addErrback(function (err) {
-            alert("Error: " + err.toString());
-        });
-    }
-}
-
-// Callback for the source loading
-function cbLoadSource(res) {
-    res = res && res.data;
-    if (res && res.content) {
-        var data = res.content;
-        if (res.encoding == "base64") {
-            data = fromBase64(data);
-        }
-        doParseSource(data);
-    }
+    var d = doSimpleXMLHttpRequest("MochiKit.js");
+    d.addCallback(function (xhr) {
+        doParseSource(xhr.responseText);
+    });
+    d.addErrback(function (err) {
+        alert("Unable to load the local packed bundle. Serve the checkout over HTTP. " + err.toString());
+    });
 }
 
 // Parses the packed library into modules
@@ -341,41 +280,10 @@ function doSubmit(e) {
     return true;
 }
 
-// The set of Base64 characters
-var base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-
-// Decodes a Base64 encoded string, using raw character codes
-function fromBase64(str) {
-    var res = [];
-    str = str.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-    var i = 0;
-    while (i < str.length) {
-        var enc1 = base64Chars.indexOf(str.charAt(i++));
-        var enc2 = base64Chars.indexOf(str.charAt(i++));
-        var enc3 = base64Chars.indexOf(str.charAt(i++));
-        var enc4 = base64Chars.indexOf(str.charAt(i++));
-        var b1 = (enc1 << 2) | (enc2 >> 4);
-        var b2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-        var b3 = ((enc3 & 3) << 6) | enc4;
-        res.push(String.fromCharCode(b1));
-        if (enc3 != 64) {
-            res.push(String.fromCharCode(b2));
-        }
-        if (enc4 != 64) {
-            res.push(String.fromCharCode(b3));
-        }
-    }
-    return res.join("");
-}
-
-// Initializes the version array (and UI)
+// Initialize from the same fork bundle used by this page.
 function doInit() {
-    MochiKit.Async.loadScript("https://api.github.com/repos/mochi/mochikit/commits?callback=cbInit");
-    MochiKit.Async.loadScript("https://api.github.com/repos/mochi/mochikit/git/refs/tags?callback=cbInit");
     connect("form", "onsubmit", doSubmit);
-    connect("packVersions", "onchange", function (e) {
-        doLoadSource(e.target().value);
-    });
+    doLoadSource();
 }
 
 doInit();

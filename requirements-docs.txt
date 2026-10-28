@@ -1,0 +1,2 @@
+# Pin the renderer so checked-in HTML is reproducible.
+docutils==0.21.2

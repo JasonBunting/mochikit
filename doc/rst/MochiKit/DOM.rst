@@ -51,6 +51,28 @@ used an API like this for creating DOM elements, you've been wasting
 your damn time. Get with it!
 
 
+Fork additions
+==============
+
+This fork adds ``ABBR``, ``CODE``, ``EM``, ``KBD``, ``SMALL``, ``SUB``,
+``SUP``, and ``TIME`` to the HTML constructors provided by
+:mochiref:`createDOM`. They follow the existing attributes-and-children
+convention. These helpers are additions to this fork, not upstream 1.5 APIs.
+
+SVG elements have a separate creation path through :mochiref:`createSVG`
+and :mochiref:`createSVGFunc`, leaving HTML creation unchanged. Use ``SVG``
+for a root element and properties such as ``SVG.RECT`` for children.
+Grouping these helpers under ``SVG`` keeps the namespace tidy. Earlier
+``SVG_RECT``-style names are not supported aliases::
+
+    var DOM = MochiKit.DOM;
+    var drawing = DOM.SVG({viewBox: "0 0 100 50", width: 200, height: 100},
+        DOM.SVG.RECT({x: 5, y: 5, width: 90, height: 40, fill: "steelblue"}),
+        DOM.SVG.TEXT({x: 10, y: 30, fill: "white"}, "Hello SVG"));
+    DOM.appendChildNodes(document.body, drawing);
+
+See the `runnable fork example <../../../examples/modern/index.html>`_.
+
 Dependencies
 ============
 
@@ -345,16 +367,19 @@ Functions
     available as aliases:
 
     - ``A``
+    - ``ABBR``
     - ``ARTICLE``
     - ``ASIDE``
     - ``BR``
     - ``BUTTON``
     - ``CANVAS``
     - ``CAPTION``
+    - ``CODE``
     - ``DD``
     - ``DIV``
     - ``DL``
     - ``DT``
+    - ``EM``
     - ``FIELDSET``
     - ``FIGURE``
     - ``FIGCAPTION``
@@ -372,6 +397,7 @@ Functions
     - ``IFRAME``
     - ``IMG``
     - ``INPUT``
+    - ``KBD``
     - ``LABEL``
     - ``LEGEND``
     - ``LI``
@@ -388,9 +414,12 @@ Functions
     - ``SCRIPT``
     - ``SECTION``
     - ``SELECT``
+    - ``SMALL``
     - ``SPAN``
     - ``STRONG``
     - ``STYLE``
+    - ``SUB``
+    - ``SUP``
     - ``TABLE``
     - ``TBODY``
     - ``TD``
@@ -398,6 +427,7 @@ Functions
     - ``TFOOT``
     - ``TH``
     - ``THEAD``
+    - ``TIME``
     - ``TR``
     - ``TT``
     - ``UL``
@@ -415,8 +445,8 @@ Functions
 
         See :mochiref:`updateNodeAttributes` for more information.
 
-        For convenience, if ``attrs`` is a string, ``null`` is used
-        and the string will be considered the first ``node``.
+        For convenience, if ``attrs`` is a string or number, ``null`` is used
+        and that value will be considered the first ``node``.
 
     ``node``...:
         All additional arguments, if any, will be coerced into DOM
@@ -485,8 +515,8 @@ Functions
 
         See :mochiref:`updateNodeAttributes` for more information.
 
-        For convenience, if ``attrs`` is a string, ``null`` is used
-        and the string will be considered the first ``node``.
+        For convenience, if ``attrs`` is a string or number, ``null`` is used
+        and that value will be considered the first ``node``.
 
     ``node``...:
         All additional arguments, if any, will be coerced into DOM

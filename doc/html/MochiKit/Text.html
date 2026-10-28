@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
 <title>MochiKit.Text - string formatting and helper functions</title>
 
 <link rel="stylesheet" href="../../../include/css/documentation.css" type="text/css" />
@@ -12,8 +11,13 @@
 <script type="text/javascript" src="../../js/toc.js"></script>
 </head>
 <body>
-<a href="https://mochi.github.io/mochikit"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit" /></a>
-<a class='indexlink' href='index.html'>Back to docs index</a>
+<a href="../../../index.html"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit fork home" /></a>
+<p class="fork-notice"><strong>Jason Bunting's MochiKit fork.</strong>
+These docs include changes beyond the original project.
+<a href="../../../README.md">Fork overview</a> ·
+<a href="../../../examples/index.html">Examples</a> ·
+<a href="https://github.com/JasonBunting/mochikit/issues">Report an issue</a></p>
+<a class="indexlink" href="index.html">Back to docs index</a>
 <div class="document">
 <div class="section" id="name">
 <h1>Name</h1>
@@ -42,8 +46,8 @@ also live here.</p>
 <div class="section" id="dependencies">
 <h1>Dependencies</h1>
 <ul class="simple">
-<li><a class="mochiref reference external" href="Base.html">MochiKit.Base</a></li>
-<li><a class="mochiref reference external" href="Format.html">MochiKit.Format</a> (to be removed)</li>
+<li><a class="reference external mochiref" href="Base.html">MochiKit.Base</a></li>
+<li><a class="reference external mochiref" href="Format.html">MochiKit.Format</a> (to be removed)</li>
 </ul>
 </div>
 <div class="section" id="overview">
@@ -51,9 +55,9 @@ also live here.</p>
 <div class="section" id="formatting-text">
 <h2>Formatting Text</h2>
 <p>MochiKit provides a generic formatting facility, modeled after the
-Python PEP 3101 Format Pattern Syntax <a class="footnote-reference" href="#id2" id="id1">[1]</a>. The text formatting
-functions <a class="mochiref reference external" href="#fn-formatter">formatter</a>, <a class="mochiref reference external" href="#fn-format">format</a> and
-<a class="mochiref reference external" href="#fn-formatvalue">formatValue</a> support formatting both single and multiple
+Python PEP 3101 Format Pattern Syntax <a class="footnote-reference" href="#footnote-1" id="footnote-reference-1">[1]</a>. The text formatting
+functions <a class="reference external mochiref" href="#fn-formatter">formatter</a>, <a class="reference external mochiref" href="#fn-format">format</a> and
+<a class="reference external mochiref" href="#fn-formatvalue">formatValue</a> support formatting both single and multiple
 values for most practical uses. The same format pattern strings (or
 part of it) is used by all three functions, and can contains an
 arbitrary number of both positional and named values mixed into
@@ -81,7 +85,7 @@ formatting to apply to the value.</p>
 <h2>Format Specifications</h2>
 <p>The format specification outlines how a value is to be converted
 into a text representation (a string). This is the only part of
-the formatting pattern accepted by the <a class="mochiref reference external" href="#fn-formatvalue">formatValue</a>
+the formatting pattern accepted by the <a class="reference external mochiref" href="#fn-formatvalue">formatValue</a>
 function. It consists of a number of parts:</p>
 <pre class="literal-block">
 [flags][width][.precision][type]
@@ -144,7 +148,7 @@ side to match the field <tt class="docutils literal">width</tt>.</td>
 </tr>
 <tr><td><tt class="docutils literal">r</tt></td>
 <td>The programmers representation format <tt class="docutils literal">type</tt>. The output
-from <a class="mochiref reference external" href="Base.html#fn-repr">MochiKit.Base.repr()</a> will be used.</td>
+from <a class="reference external mochiref" href="Base.html#fn-repr">MochiKit.Base.repr()</a> will be used.</td>
 </tr>
 <tr><td><tt class="docutils literal">b</tt></td>
 <td>The binary number format <tt class="docutils literal">type</tt>. Rounds the number to the
@@ -184,14 +188,12 @@ character will be added to the end.</td>
 <h1>API Reference</h1>
 <div class="section" id="errors">
 <h2>Errors</h2>
-<p>
-<a name="fn-formatpatternerror"></a>
-<a class="mochidef reference external" href="#fn-formatpatternerror">FormatPatternError</a>:</p>
+<p><a id="fn-formatpatternerror" name="fn-formatpatternerror"></a><a class="reference external mochidef" href="#fn-formatpatternerror">FormatPatternError</a>:</p>
 <blockquote>
 <p>Thrown when a syntax error is encountered inside a format string
-by the <a class="mochiref reference external" href="#fn-formatter">formatter</a>, <a class="mochiref reference external" href="#fn-format">format</a> or
-<a class="mochiref reference external" href="#fn-formatvalue">formatValue</a> functions. In addition to the normal
-<a class="mochiref reference external" href="Base.html#fn-namederror">MochiKit.Base.NamedError</a> functions, each object also
+by the <a class="reference external mochiref" href="#fn-formatter">formatter</a>, <a class="reference external mochiref" href="#fn-format">format</a> or
+<a class="reference external mochiref" href="#fn-formatvalue">formatValue</a> functions. In addition to the normal
+<a class="reference external mochiref" href="Base.html#fn-namederror">MochiKit.Base.NamedError</a> functions, each object also
 has the following properties set:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal">pattern</tt>:</dt>
@@ -207,9 +209,7 @@ has the following properties set:</p>
 </div>
 <div class="section" id="functions">
 <h2>Functions</h2>
-<p>
-<a name="fn-contains"></a>
-<a class="mochidef reference external" href="#fn-contains">contains(substr, str)</a>:</p>
+<p><a id="fn-contains" name="fn-contains"></a><a class="reference external mochidef" href="#fn-contains">contains(substr, str)</a>:</p>
 <blockquote>
 <p>Returns <tt class="docutils literal">true</tt> if <tt class="docutils literal">str</tt> contains <tt class="docutils literal">substr</tt>, otherwise <tt class="docutils literal">false</tt>.
 If either <tt class="docutils literal">str</tt> or <tt class="docutils literal">substr</tt> is null, <tt class="docutils literal">false</tt> is returned.</p>
@@ -218,9 +218,7 @@ If either <tt class="docutils literal">str</tt> or <tt class="docutils literal">
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-endswith"></a>
-<a class="mochidef reference external" href="#fn-endswith">endsWith(substr, str)</a>:</p>
+<p><a id="fn-endswith" name="fn-endswith"></a><a class="reference external mochidef" href="#fn-endswith">endsWith(substr, str)</a>:</p>
 <blockquote>
 <p>Returns <tt class="docutils literal">true</tt> if <tt class="docutils literal">str</tt> ends with <tt class="docutils literal">substr</tt>, otherwise <tt class="docutils literal">false</tt>.
 If either <tt class="docutils literal">str</tt> or <tt class="docutils literal">substr</tt> is null, <tt class="docutils literal">false</tt> is returned.</p>
@@ -229,24 +227,20 @@ If either <tt class="docutils literal">str</tt> or <tt class="docutils literal">
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-format"></a>
-<a class="mochidef reference external" href="#fn-format">format(pattern[, ...])</a>:</p>
+<p><a id="fn-format" name="fn-format"></a><a class="reference external mochidef" href="#fn-format">format(pattern[, ...])</a>:</p>
 <blockquote>
 <p>Formats the values specified using a format <tt class="docutils literal">pattern</tt> and
 returns the resulting string. The default locale is always used
 by this function. For more information see
 <a class="reference internal" href="#formatting-text">Formatting Text</a>.</p>
-<p>A <a class="mochiref reference external" href="#fn-formatpatternerror">FormatPatternError</a> will be thrown if the formatting
+<p>A <a class="reference external mochiref" href="#fn-formatpatternerror">FormatPatternError</a> will be thrown if the formatting
 pattern is recognized as invalid.</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-formatter"></a>
-<a class="mochidef reference external" href="#fn-formatter">formatter(pattern, locale=&quot;default&quot;)</a>:</p>
+<p><a id="fn-formatter" name="fn-formatter"></a><a class="reference external mochidef" href="#fn-formatter">formatter(pattern, locale=&quot;default&quot;)</a>:</p>
 <blockquote>
 <p>Returns a function that formats values according to a format
 <tt class="docutils literal">pattern</tt>. The specified <tt class="docutils literal">locale</tt> string or object will be
@@ -254,16 +248,14 @@ used to adjust number formatting where appropriate. The
 returned function takes as many arguments as the format
 <tt class="docutils literal">pattern</tt> requires. For more information see
 <a class="reference internal" href="#formatting-text">Formatting Text</a>.</p>
-<p>A <a class="mochiref reference external" href="#fn-formatpatternerror">FormatPatternError</a> will be thrown if the formatting
+<p>A <a class="reference external mochiref" href="#fn-formatpatternerror">FormatPatternError</a> will be thrown if the formatting
 pattern is recognized as invalid.</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-formatvalue"></a>
-<a class="mochidef reference external" href="#fn-formatvalue">formatValue(spec, value, locale=&quot;default&quot;)</a>:</p>
+<p><a id="fn-formatvalue" name="fn-formatvalue"></a><a class="reference external mochidef" href="#fn-formatvalue">formatValue(spec, value, locale=&quot;default&quot;)</a>:</p>
 <blockquote>
 <p>Formats a <tt class="docutils literal">value</tt> with the format specifier <tt class="docutils literal">spec</tt>. The
 specified <tt class="docutils literal">locale</tt> string or object will be used to adjust
@@ -271,16 +263,14 @@ number formatting where appropriate.</p>
 <p>Note that <tt class="docutils literal">spec</tt> is only a partial formatting pattern, detailing
 only how a particular value is to be formatted. For more information
 see <a class="reference internal" href="#formatting-text">Formatting Text</a>.</p>
-<p>A <a class="mochiref reference external" href="#fn-formatpatternerror">FormatPatternError</a> will be thrown if the partial
+<p>A <a class="reference external mochiref" href="#fn-formatpatternerror">FormatPatternError</a> will be thrown if the partial
 formatting pattern is recognized as invalid.</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-padleft"></a>
-<a class="mochidef reference external" href="#fn-padleft">padLeft(str, minLength, fillChar=&quot; &quot;)</a>:</p>
+<p><a id="fn-padleft" name="fn-padleft"></a><a class="reference external mochidef" href="#fn-padleft">padLeft(str, minLength, fillChar=&quot; &quot;)</a>:</p>
 <blockquote>
 <p>Returns a string where <tt class="docutils literal">fillChar</tt> has been prepended to <tt class="docutils literal">str</tt>
 until the string length is at least <tt class="docutils literal">minLength</tt> characters.
@@ -291,9 +281,7 @@ consist of repeated <tt class="docutils literal">fillChar</tt> copies.</p>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-padright"></a>
-<a class="mochidef reference external" href="#fn-padright">padRight(str, minLength, fillChar=&quot; &quot;)</a>:</p>
+<p><a id="fn-padright" name="fn-padright"></a><a class="reference external mochidef" href="#fn-padright">padRight(str, minLength, fillChar=&quot; &quot;)</a>:</p>
 <blockquote>
 <p>Returns a string where <tt class="docutils literal">fillChar</tt> has been appended to <tt class="docutils literal">str</tt>
 until the string length is at least <tt class="docutils literal">minLength</tt> characters.
@@ -304,9 +292,7 @@ consist of repeated <tt class="docutils literal">fillChar</tt> copies.</p>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-split"></a>
-<a class="mochidef reference external" href="#fn-split">split(str, separator=&quot;\n&quot; [, max])</a>:</p>
+<p><a id="fn-split" name="fn-split"></a><a class="reference external mochidef" href="#fn-split">split(str, separator=&quot;\n&quot; [, max])</a>:</p>
 <blockquote>
 <p>Splits <tt class="docutils literal">str</tt> using a <tt class="docutils literal">separator</tt> string or regular expression.
 If <tt class="docutils literal">max</tt> is given, at most <tt class="docutils literal">max</tt> splits will be performed
@@ -328,9 +314,7 @@ can be illustrated by:</p>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-rsplit"></a>
-<a class="mochidef reference external" href="#fn-rsplit">rsplit(str, separator=&quot;\n&quot; [, max])</a>:</p>
+<p><a id="fn-rsplit" name="fn-rsplit"></a><a class="reference external mochidef" href="#fn-rsplit">rsplit(str, separator=&quot;\n&quot; [, max])</a>:</p>
 <blockquote>
 <p>Splits <tt class="docutils literal">str</tt> using a <tt class="docutils literal">separator</tt> string or regular expression.
 This is similar to <tt class="docutils literal">split</tt>, except that if <tt class="docutils literal">max</tt> is given,
@@ -344,9 +328,7 @@ splits are performed from the right hand side first.</p>
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-startswith"></a>
-<a class="mochidef reference external" href="#fn-startswith">startsWith(substr, str)</a>:</p>
+<p><a id="fn-startswith" name="fn-startswith"></a><a class="reference external mochidef" href="#fn-startswith">startsWith(substr, str)</a>:</p>
 <blockquote>
 <p>Returns <tt class="docutils literal">true</tt> if <tt class="docutils literal">str</tt> starts with <tt class="docutils literal">substr</tt>, otherwise <tt class="docutils literal">false</tt>.
 If either <tt class="docutils literal">str</tt> or <tt class="docutils literal">substr</tt> is null, <tt class="docutils literal">false</tt> is returned.</p>
@@ -355,9 +337,7 @@ If either <tt class="docutils literal">str</tt> or <tt class="docutils literal">
 <dd>Available in MochiKit 1.5+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-truncate"></a>
-<a class="mochidef reference external" href="#fn-truncate">truncate(str, maxLength, tail=&quot;&quot;)</a>:</p>
+<p><a id="fn-truncate" name="fn-truncate"></a><a class="reference external mochidef" href="#fn-truncate">truncate(str, maxLength, tail=&quot;&quot;)</a>:</p>
 <blockquote>
 <p>Returns a truncated copy of <tt class="docutils literal">str</tt> with no more than <tt class="docutils literal">maxLength</tt>
 characters. If <tt class="docutils literal">str</tt> is truncated, <tt class="docutils literal">tail</tt> will be appended  in
@@ -374,14 +354,14 @@ must also be an Array.</p>
 </div>
 <div class="section" id="see-also">
 <h1>See Also</h1>
-<table class="docutils footnote" frame="void" id="id2" rules="none">
+<table class="docutils footnote" frame="void" id="footnote-1" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Python PEP 3101 Format Pattern Syntax:
+<tr><td class="label"><a class="fn-backref" href="#footnote-reference-1">[1]</a></td><td>Python PEP 3101 Format Pattern Syntax:
 <a class="reference external" href="http://www.python.org/dev/peps/pep-3101/">http://www.python.org/dev/peps/pep-3101/</a></td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="footnote-2" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label">[2]</td><td>Python String Module:

@@ -3,7 +3,17 @@
 Distribution
 ============
 
-MochiKit - makes JavaScript suck a bit less
+**This is Jason Bunting's modified fork of MochiKit.** It includes SVG and
+HTML helpers, Promise adaptation, and modern event APIs beyond upstream.
+The module version remains 1.5; use the fork revision to identify your code.
+
+Start with the `fork README <../../../README.md>`_, the
+`examples <../../../examples/index.html>`_, or the
+`customizer <../../../packed/MochiKit/customize.html>`_.
+Both ``MochiKit/`` source modules and the regenerated ``packed/`` bundle
+include these additions. The customizer uses this checkout's bundle.
+
+Module reference
 
 - :mochiref:`MochiKit.Async` - manage asynchronous tasks
 - :mochiref:`MochiKit.Base` - functional programming and useful comparisons
@@ -38,28 +48,16 @@ When export mode is off, you must use fully qualified names for
 all MochiKit functions (e.g. ``MochiKit.Base.map(...)``).
 
 
-Screencasts
-===========
+Project links
+=============
 
-- `MochiKit 1.1 Intro`__
+- `Fork repository <https://github.com/JasonBunting/mochikit>`_
+- `Fork issue tracker <https://github.com/JasonBunting/mochikit/issues>`_
+- `Original project <https://github.com/mochi/mochikit>`_
+- `Upstream documentation <https://mochi.github.io/mochikit/>`_ (original APIs)
 
-.. __: https://mochi.github.io/mochikit/screencasts/MochiKit_Intro-1
-
-See Also
-========
-
-.. _`mochikit.com`: https://mochi.github.io/mochikit/
-.. _`MochiKit Wiki`: http://trac.mochikit.com/wiki
-.. _`MochiKit tag on del.icio.us`: http://del.icio.us/tag/mochikit
-.. _`MochiKit tag on Technorati`: http://technorati.com/tag/mochikit
-.. _`Google Groups: MochiKit`: http://groups.google.com/group/mochikit
-
-- `Google Groups: MochiKit`_: The official mailing list for discussions
-  related to development of and with MochiKit
-- `mochikit.com`_: MochiKit's home on the web
-- `MochiKit Wiki`_: MochiKit's wiki site with additional docs and examples
-- `MochiKit tag on del.icio.us`_: Recent bookmarks related to MochiKit
-- `MochiKit tag on Technorati`_: Recent blog entries related to MochiKit
+The domain ``mochikit.com`` is no longer affiliated with MochiKit or its
+maintainers. The old Trac tracker and wiki are not support channels for this fork.
 
 
 Version History

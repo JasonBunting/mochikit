@@ -1,20 +1,72 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.10: http://docutils.sourceforge.net/" />
-<title></title>
+<title>VersionHistory.rst</title>
 
 <link rel="stylesheet" href="../../../include/css/documentation.css" type="text/css" />
 <script type="text/javascript" src="../../../packed/MochiKit/MochiKit.js"></script>
 <script type="text/javascript" src="../../js/toc.js"></script>
 </head>
 <body>
-<a href="https://mochi.github.io/mochikit"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit" /></a>
-<a class='indexlink' href='index.html'>Back to docs index</a>
+<a href="../../../index.html"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit fork home" /></a>
+<p class="fork-notice"><strong>Jason Bunting's MochiKit fork.</strong>
+These docs include changes beyond the original project.
+<a href="../../../README.md">Fork overview</a> ·
+<a href="../../../examples/index.html">Examples</a> ·
+<a href="https://github.com/JasonBunting/mochikit/issues">Report an issue</a></p>
+<a class="indexlink" href="index.html">Back to docs index</a>
 <div class="document">
+<p>2026-10-28      fork maintenance (unreleased)</p>
+<ul class="simple">
+<li>Regenerated the packed bundle with all fork additions. The customizer now
+uses the local fork bundle instead of downloading upstream versions.</li>
+<li>Updated packing, documentation, API-index, and distribution tools for
+Python 3. Added checks for stale generated files and build regression tests.</li>
+<li>Updated the API references, generated HTML, navigation, and fork notices.</li>
+<li>Added a runnable example for SVG, semantic HTML, Promise adaptation, and
+modern event accessors; expanded the existing keyboard example.</li>
+<li>Distribution archives retain repository paths so documentation, examples,
+and build commands work consistently in a checkout or extracted archive.</li>
+<li>Fixed sortable-tree traversal of text and comment nodes, which caused the
+inherited tree example to fail on formatted HTML. Also prevented nested
+items from being serialized again as root siblings. Added regression
+coverage for nested tree construction and serialization.</li>
+</ul>
+<p>2026-10-27      fork event and async updates (unreleased)</p>
+<ul class="simple">
+<li>Added capture and passive options to Signal.connect() and connectOnce(),
+retaining capture settings for disconnection and cleanup listeners.</li>
+<li>Rejected native once and signal options to preserve connection bookkeeping.</li>
+<li>Added keyName(), isComposing(), repeat(), pointer(), dataTransfer(), detail(),
+isTrusted(), defaultPrevented(), persisted(), and stopImmediatePropagation()
+to Signal.Event while preserving key(), mouse(), and stop() behavior.</li>
+<li>Fixed capture-mode mouseenter/mouseleave emulation suppressing descendant
+events. Documented the connectOnce()/stopImmediatePropagation() limitation.</li>
+<li>Fixed fromPromise() handling of Deferred fulfillment and rejection values.</li>
+<li>Added regression tests; the commit records 15 suites and 1,542 assertions
+passing in Chrome and Firefox.</li>
+</ul>
+<p>2026-09-16      fork HTML helpers (unreleased)</p>
+<ul class="simple">
+<li>Added DOM.ABBR, CODE, EM, KBD, SMALL, SUB, SUP, and TIME constructors using
+the existing attributes-and-children convention.</li>
+</ul>
+<p>2026-09-04      initial fork additions (unreleased)</p>
+<ul class="simple">
+<li>Added MochiKit.DOM.createSVG() and createSVGFunc() helpers for creating
+SVG elements with the correct namespace, plus SVG and its CIRCLE, G, IMAGE,
+LINE, PATH, POLYGON, RECT and TEXT convenience constructors.</li>
+<li>Added MochiKit.Async.fromPromise() to adapt JavaScript Promises and thenables
+to MochiKit Deferreds.</li>
+<li>Kept SVG creation separate from createDOM() to preserve HTML behavior.
+Grouped child helpers under SVG and added SVG.IMAGE; the initial SVG_*
+spellings were replaced rather than retained as aliases.</li>
+<li>Adjusted layout tests for one-pixel rendering differences, XHR fixture
+checks for LF/CRLF line endings, and the Chromium scope-leak filter.</li>
+</ul>
 <p>2013-01-05      v1.5</p>
 <ul class="simple">
 <li>Fixed element measurement for table cells in Firefox (#18)</li>

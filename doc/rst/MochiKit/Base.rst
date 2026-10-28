@@ -234,7 +234,7 @@ of the source ``Array``-like object, it's no problem with
 
 Wouldn't it be convenient to have all of the JavaScript operators were
 available as functions somewhere? That's what the
-:mochiref:`operators` table is for, and it even comes with additional
+:mochiref:`operator` table is for, and it even comes with additional
 operators based on the :mochiref:`compare` function.
 
 Need to walk some tree of objects and manipulate or find something in
@@ -869,7 +869,7 @@ Functions
     arguments, then the ``Array`` function is used.
 
         :mochiref:`map(null, p, q, ...)`
-            -> :mochiref:`MochiKit.Iter.zip(p, q, ...)`
+            -> :mochiref:`zip(p, q, ...)`
             -> ``[[p0, q0, ...], [p1, q1, ...], ...];``
    
     Since this is a common idiom, :mochiref:`zip(p, q, ...)`

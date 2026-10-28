@@ -8,12 +8,13 @@
     <script type="text/javascript" src="key_events.js"></script>
 </head>
 <body>
+    <p class="fork-notice">MochiKit fork example · <a href="../index.html">All examples</a> · <a href="../../doc/html/MochiKit/index.html">Fork API docs</a></p>
 
     <h1>
         Key Events with MochiKit
     </h1>
     <p>
-        This is an example of one might implement a key listener with
+        This example compares legacy and modern keyboard values using
         MochiKit&#8217;s Signal.
     </p>
     <p>
@@ -29,7 +30,7 @@
         ]
     </p>
 
-    <p>Check this box to test <a href="https://mochi.github.io/mochikit/doc/html/MochiKit/Signal.html#fn-preventdefault">
+    <p>Check this box to test <a href="../../doc/html/MochiKit/Signal.html#fn-preventdefault">
     preventDefault()</a> in your browser:
     <input type="checkbox" id="stopBox" /></p>
     
@@ -39,25 +40,30 @@
         <tr>
             <th>Event</th>
             <th>Key Code</th>
-            <th>Key String</th>
+            <th>Key String (legacy)</th>
+            <th>Native key</th><th>Repeat</th><th>Composing</th>
         </tr>
         <tr>
             <td>onkeydown</td>
             <td id="onkeydown_code">-</td>
             <td id="onkeydown_string">-</td>
+            <td id="onkeydown_native">-</td><td id="onkeydown_repeat">-</td><td id="onkeydown_composing">-</td>
         </tr>
         <tr>
             <td>onkeyup</td>
             <td id="onkeyup_code">-</td>
             <td id="onkeyup_string">-</td>
+            <td id="onkeyup_native">-</td><td id="onkeyup_repeat">-</td><td id="onkeyup_composing">-</td>
         </tr>
         <tr>
             <td>onkeypress</td>
             <td id="onkeypress_code">-</td>
             <td id="onkeypress_string">-</td>
+            <td id="onkeypress_native">-</td><td id="onkeypress_repeat">-</td><td id="onkeypress_composing">-</td>
         </tr>
     </table>
     
+    <p><code>keyName()</code>, <code>repeat()</code>, and <code>isComposing()</code> are fork additions. Native key values reflect the keyboard layout; missing browser properties display as undefined. The keypress row retains the original example's legacy behavior.</p>
     <h3>Modifiers</h3>
     <table>
         <tr>

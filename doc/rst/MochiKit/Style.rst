@@ -115,7 +115,7 @@ Functions
 
     Sets ``opacity`` for ``element``. Valid ``opacity`` values range
     from 0 (invisible) to 1 (opaque). ``element`` is looked up with
-    :mochiref:`getElement`, so string identifiers are also acceptable.
+    :mochiref:`MochiKit.DOM.getElement`, so string identifiers are also acceptable.
 
     *Availability*:
         Available in MochiKit 1.4+
@@ -128,7 +128,7 @@ Functions
     document. The size will include padding and border, but not margins, unless
     ``contentSize`` is set to true, in which case the size will be only the
     content size, without padding and border. ``element`` may be specified as
-    a string to be looked up with :mochiref:`getElement`, a DOM element, or
+    a string to be looked up with :mochiref:`MochiKit.DOM.getElement`, a DOM element, or
     trivially as an object with ``w`` and/or ``h`` properties.
 
     *Availability*:
@@ -146,7 +146,7 @@ Functions
 
     ``element``:
         A reference to the DOM element to update (if a string is
-        given, :mochiref:`getElement(node)` will be used to locate the
+        given, :mochiref:`MochiKit.DOM.getElement(node)` will be used to locate the
         node)
 
     ``dimensions``:
@@ -165,7 +165,7 @@ Functions
     Return the absolute pixel position of ``element`` in the document
     as an object with ``x`` and ``y`` properties, or ``undefined`` if
     ``element`` is not in the document. ``element`` may be specified
-    as a string to be looked up with :mochiref:`getElement`, a DOM
+    as a string to be looked up with :mochiref:`MochiKit.DOM.getElement`, a DOM
     element, or trivially as an object with ``x`` and/or ``y``
     properties.
 
@@ -179,7 +179,7 @@ Functions
         assert( relPos.y == (elemPos.y - anotherElemPos.y) );
 
     ``relativeTo`` may be specified as a string to be looked up with
-    :mochiref:`getElement`, a DOM element, or trivially as an object
+    :mochiref:`MochiKit.DOM.getElement`, a DOM element, or trivially as an object
     with ``x`` and/or ``y`` properties.
 
     *Availability*:
@@ -193,7 +193,7 @@ Functions
 
     ``element``:
         A reference to the DOM element to update (if a string is
-        given, :mochiref:`getElement(node)` will be used to locate the
+        given, :mochiref:`MochiKit.DOM.getElement(node)` will be used to locate the
         node)
 
     ``position``:
@@ -211,7 +211,7 @@ Functions
 
     Ensure that ``element.style.position`` is set to ``"relative"`` if it
     is not set or is ``"static"``. If ``element`` is a
-    string, then it will be looked up with :mochiref:`getElement`.
+    string, then it will be looked up with :mochiref:`MochiKit.DOM.getElement`.
 
     *Availability*:
         Available in MochiKit 1.4.1+
@@ -221,7 +221,7 @@ Functions
 
     Restore the setting of ``element.style.position`` set by
     :mochiref:`makePositioned(element)`. If ``element`` is a string, then
-    it will be looked up with :mochiref:`getElement`.
+    it will be looked up with :mochiref:`MochiKit.DOM.getElement`.
 
     *Availability*:
         Available in MochiKit 1.4.1+
@@ -230,7 +230,7 @@ Functions
 :mochidef:`makeClipping(element)`:
 
     Ensure that ``element.style.overflow = 'hidden'``. If ``element`` is a
-    string, then it will be looked up with :mochiref:`getElement`.
+    string, then it will be looked up with :mochiref:`MochiKit.DOM.getElement`.
 
     Returns the original values of ``overflow``, ``overflow-y`` and
     ``overflow-y`` so that they may be restored with
@@ -244,7 +244,7 @@ Functions
 
     Restore the setting of ``element.style.overflow`` set by
     :mochiref:`makeClipping(element)`. If ``element`` is a string, then
-    it will be looked up with :mochiref:`getElement`.
+    it will be looked up with :mochiref:`MochiKit.DOM.getElement`.
 
     *Availability*:
         Available in MochiKit 1.4.1+
@@ -258,7 +258,7 @@ Functions
     - :mochiref:`showElement(element, ...)`
     - :mochiref:`hideElement(element, ...)`
 
-    Elements are looked up with :mochiref:`getElement`, so string
+    Elements are looked up with :mochiref:`MochiKit.DOM.getElement`, so string
     identifiers are acceptable.
 
     For information about the caveats of using a ``style.display``

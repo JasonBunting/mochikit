@@ -149,6 +149,12 @@ Objects defined
     through a XMLHTTPRequest. The options overrides the ones of the Sortable
     only for the serialization.
 
+    In this fork, tree traversal skips text and comment nodes when finding
+    child lists. Tree serialization visits each list level once, so nested
+    items retain their parent-child relationship without also appearing as
+    root siblings. See the
+    `sortable tree example <../../../examples/dnd_sortable/sortable_tree_test.html>`_.
+
     ====== ==========================================
     tag    tag from the Sortable
     only   only from the Sortable

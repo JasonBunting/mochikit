@@ -1,50 +1,55 @@
-#!/usr/bin/env python
-# -*- encoding: utf8 -*-
+#!/usr/bin/env python3
+"""Emit the legacy API-index XML with local links (or --base-url SITE_ROOT)."""
+import argparse
+from html.parser import HTMLParser
+from pathlib import Path
+import re
+import sys
+from urllib.parse import urljoin
+import xml.etree.ElementTree as ET
 
-# This script generates an index XML on stdout for MochiKit docs
-# suitable for submission to http://gotapi.com
-# It depends on the html docs being up to date.
+ROOT = Path(__file__).resolve().parent.parent
 
-import re, sys
 
-try:
-    import xml.etree.ElementTree as ET
-except ImportError:
-    try:
-        import cElementTree as ET
-    except ImportError:
-        try:
-            import elementtree.ElementTree as ET
-        except ImportError:
-            raise ImportError("You need ElementTree")
+class Definitions(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.items = []
+        self.current = None
 
-if __name__ == "__main__":
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'a' and 'mochidef' in attrs.get('class', '').split():
+            self.current = [attrs['href'], []]
 
-    mk = file('MochiKit/MochiKit.js').read()
-    modules = map(str.strip, re.search(
-        r"""(?mxs)MochiKit.MochiKit.SUBMODULES\s*=\s*\[([^\]]+)""",
-        mk
-    ).group(1).replace(' ', '').replace('"', '').split(','))
+    def handle_data(self, data):
+        if self.current is not None:
+            self.current[1].append(data)
 
-    root = ET.Element("pages")
+    def handle_endtag(self, tag):
+        if tag == 'a' and self.current is not None:
+            self.items.append((self.current[0], ''.join(self.current[1])))
+            self.current = None
 
-    for modulename in modules:
 
-        tb = ET.XMLTreeBuilder()
-        tb.entity['nbsp'] = " ";
-        doc = ET.parse("doc/html/MochiKit/%s.html" % modulename, parser=tb)
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--base-url', default='', help='optional URL of a hosted checkout, ending in /')
+    args = parser.parse_args()
+    loader = (ROOT / 'MochiKit' / 'MochiKit.js').read_text(encoding='utf-8')
+    names = re.search(r'MochiKit.MochiKit.SUBMODULES\s*=\s*\[([^\]]+)', loader).group(1)
+    root = ET.Element('pages')
+    for module in re.findall(r'[\'"]([^\'"]+)[\'"]', names):
+        filename = 'doc/html/MochiKit/' + module + '.html'
+        definitions = Definitions()
+        definitions.feed((ROOT / filename).read_text(encoding='utf-8'))
+        url = urljoin(args.base_url.rstrip('/') + '/' if args.base_url else '', filename)
+        page = ET.SubElement(root, 'page', title='MochiKit.' + module, type='package', url=url)
+        for anchor, title in definitions.items:
+            ET.SubElement(page, 'page', title=title, type='method', url=url + anchor)
+    ET.indent(root)
+    sys.stdout.buffer.write(ET.tostring(root, encoding='utf-8', xml_declaration=True) + b'\n')
 
-        mod = ET.SubElement(root, "page")
-        mod.attrib.update(dict(title="MochiKit.%s" % modulename, 
-                               type="package", 
-                               url="https://mochi.github.io/mochikit/doc/html/MochiKit/%s.html" % modulename))
 
-        for a in doc.findall("//{http://www.w3.org/1999/xhtml}a"):
-            if a.attrib.get("class",None) == "mochidef reference":
-                fun = ET.SubElement(mod, "page")
-                fun.attrib.update(dict(title=a.text),
-                                       type="method",
-                                       url="https://mochi.github.io/mochikit/doc/html/MochiKit/%s.html%s" % (modulename, a.attrib["href"]))
-    tree = ET.ElementTree(root)
-    tree.write(sys.stdout, encoding="UTF-8")
-
+if __name__ == '__main__':
+    main()

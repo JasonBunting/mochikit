@@ -1,2 +1,4 @@
 /dist
 .project
+/.venv/
+__pycache__/

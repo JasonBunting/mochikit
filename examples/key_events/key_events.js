@@ -12,6 +12,12 @@ KeyEvents = {
     handleEscape: function() {
         replaceChildNodes('specialMessage', 'You invoked the special Escape handler!');
     },
+    updateModern: function(e) {
+        var prefix = 'on' + e.type();
+        replaceChildNodes(prefix + '_native', String(e.keyName()));
+        replaceChildNodes(prefix + '_repeat', String(e.repeat()));
+        replaceChildNodes(prefix + '_composing', String(e.isComposing()));
+    },
     updateModifiers: function(e) {
         var modifiers = e.modifier();
         replaceChildNodes('shift', modifiers.shift);
@@ -28,6 +34,7 @@ KeyEvents.specialKeyMap = {
 
 connect(document, 'onkeydown', 
     function(e) {
+        KeyEvents.updateModern(e);
         if (getElement('stopBox').checked == true) {
             e.preventDefault();
         }
@@ -49,6 +56,7 @@ connect(document, 'onkeydown',
     
 connect(document, 'onkeyup', 
     function(e) {
+        KeyEvents.updateModern(e);
         if (getElement('stopBox').checked == true) {
             e.preventDefault();
         }
@@ -62,6 +70,7 @@ connect(document, 'onkeyup',
 
 connect(document, 'onkeypress', 
     function(e) {
+        KeyEvents.updateModern(e);
         if (getElement('stopBox').checked == true) {
             e.preventDefault();
         }

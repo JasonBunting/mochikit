@@ -75,6 +75,35 @@ more on how that is handled and also how it is used in model/view
 programming at: http://doc.trolltech.com/
 
 
+Fork additions
+==============
+
+This fork adds ``capture`` and ``passive`` options to :mochiref:`connect`
+and :mochiref:`connectOnce`, plus the event accessors :mochiref:`keyName`,
+:mochiref:`isComposing`, :mochiref:`repeat`, :mochiref:`pointer`,
+:mochiref:`dataTransfer`, :mochiref:`detail`, :mochiref:`isTrusted`,
+:mochiref:`defaultPrevented`, :mochiref:`persisted`, and
+:mochiref:`stopImmediatePropagation`. These additions are not upstream 1.5 APIs.
+Existing ``key()``, ``mouse()``, and ``stop()`` behavior is preserved.
+
+For example, observe pointer movement during capture without cancelling
+browser actions::
+
+    var listener = MochiKit.Signal.connect(document, "onpointermove", function (e) {
+        var pointer = e.pointer();
+        if (pointer) {
+            MochiKit.DOM.replaceChildNodes("status",
+                pointer.type + " at " + pointer.client.x + ", " + pointer.client.y);
+        }
+    }, {capture: true, passive: true});
+    // When the observer is no longer needed:
+    // MochiKit.Signal.disconnect(listener);
+
+This example assumes an element with id ``status``. Accessors expose native
+values; unsupported properties remain ``undefined``. See the
+`runnable fork example <../../../examples/modern/index.html>`_ for keyboard,
+pointer, and listener-option demonstrations.
+
 Dependencies
 ============
 
@@ -114,11 +143,10 @@ many conveniences not available even in a correct W3C implementation.
 See the `DOM Custom Event Object Reference`_ for a detailed API
 description of this object.
 
-If you find that you're accessing the native event for any reason,
-create a `new ticket`_ and we'll look into normalizing the behavior
-you're looking for.
+Use :mochiref:`event` when a native property is not exposed by the wrapper.
+Suggestions for additional accessors belong in this fork's `issue tracker`_.
 
-.. _`new ticket`: http://trac.mochikit.com/newticket
+.. _`issue tracker`: https://github.com/JasonBunting/mochikit/issues
 .. _`Safari bug 6595`: http://bugs.webkit.org/show_bug.cgi?id=6595
 .. _`Safari bug 7790`: http://bugs.webkit.org/show_bug.cgi?id=7790
 .. _`Safari bug 8707`: http://bugs.webkit.org/show_bug.cgi?id=8707

@@ -43,6 +43,28 @@ MochiKit.Async provides facilities to manage asynchronous (as in AJAX
 module is heavily inspired by Twisted [2]_.
 
 
+Fork addition: Promise adaptation
+=================================
+
+:mochiref:`fromPromise` is an addition to this fork, not an upstream 1.5 API.
+It bridges native Promises and thenables into existing Deferred chains::
+
+    var d = MochiKit.Async.fromPromise(Promise.resolve("Ready"));
+    d.addCallback(function (value) {
+        MochiKit.DOM.replaceChildNodes("status", value);
+        return value;
+    });
+    d.addErrback(function (error) {
+        MochiKit.DOM.replaceChildNodes("status", "Failed: " + error.message);
+        return null;
+    });
+
+This example assumes an element with id ``status`` and the DOM module.
+The adapter does not provide a Promise polyfill. Cancelling the Deferred
+ignores later settlement but does not cancel the underlying operation.
+See :mochiref:`fromPromise` for rejection wrapping and Deferred chaining
+rules, or try the `runnable fork example <../../../examples/modern/index.html>`_.
+
 Dependencies
 ============
 

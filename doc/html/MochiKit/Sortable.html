@@ -1,10 +1,9 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
 <title>MochiKit.Sortable - sortable with drag and drop lists</title>
 
 <link rel="stylesheet" href="../../../include/css/documentation.css" type="text/css" />
@@ -12,8 +11,13 @@
 <script type="text/javascript" src="../../js/toc.js"></script>
 </head>
 <body>
-<a href="https://mochi.github.io/mochikit"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit" /></a>
-<a class='indexlink' href='index.html'>Back to docs index</a>
+<a href="../../../index.html"><img id="mainlink" src="../../../include/img/g_logo_doc.gif" alt="MochiKit fork home" /></a>
+<p class="fork-notice"><strong>Jason Bunting's MochiKit fork.</strong>
+These docs include changes beyond the original project.
+<a href="../../../README.md">Fork overview</a> ·
+<a href="../../../examples/index.html">Examples</a> ·
+<a href="https://github.com/JasonBunting/mochikit/issues">Report an issue</a></p>
+<a class="indexlink" href="index.html">Back to docs index</a>
 <div class="document">
 <div class="section" id="name">
 <h1>Name</h1>
@@ -41,13 +45,13 @@ drag&amp;drop in lists.</p>
 <div class="section" id="dependencies">
 <h1>Dependencies</h1>
 <ul class="simple">
-<li><a class="mochiref reference external" href="Base.html">MochiKit.Base</a></li>
-<li><a class="mochiref reference external" href="Iter.html">MochiKit.Iter</a></li>
-<li><a class="mochiref reference external" href="DOM.html">MochiKit.DOM</a></li>
-<li><a class="mochiref reference external" href="Color.html">MochiKit.Color</a></li>
-<li><a class="mochiref reference external" href="Visual.html">MochiKit.Visual</a></li>
-<li><a class="mochiref reference external" href="Signal.html">MochiKit.Signal</a></li>
-<li><a class="mochiref reference external" href="DragAndDrop.html">MochiKit.DragAndDrop</a></li>
+<li><a class="reference external mochiref" href="Base.html">MochiKit.Base</a></li>
+<li><a class="reference external mochiref" href="Iter.html">MochiKit.Iter</a></li>
+<li><a class="reference external mochiref" href="DOM.html">MochiKit.DOM</a></li>
+<li><a class="reference external mochiref" href="Color.html">MochiKit.Color</a></li>
+<li><a class="reference external mochiref" href="Visual.html">MochiKit.Visual</a></li>
+<li><a class="reference external mochiref" href="Signal.html">MochiKit.Signal</a></li>
+<li><a class="reference external mochiref" href="DragAndDrop.html">MochiKit.DragAndDrop</a></li>
 </ul>
 </div>
 <div class="section" id="overview">
@@ -61,9 +65,7 @@ can also be serialized for being send to server. It is ported from
 <h1>API Reference</h1>
 <div class="section" id="objects-defined">
 <h2>Objects defined</h2>
-<p>
-<a name="fn-sortableobserver"></a>
-<a class="mochidef reference external" href="#fn-sortableobserver">SortableObserver</a>:</p>
+<p><a id="fn-sortableobserver" name="fn-sortableobserver"></a><a class="reference external mochidef" href="#fn-sortableobserver">SortableObserver</a>:</p>
 <blockquote>
 <p>Observer for DragAndDrop object. You normally don't have to access
 this, only for customization purpose.</p>
@@ -72,9 +74,7 @@ this, only for customization purpose.</p>
 <dd>Available in MochiKit 1.4+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-sortable.create"></a>
-<a class="mochidef reference external" href="#fn-sortable.create">Sortable.create(element [, options])</a>:</p>
+<p><a id="fn-sortable.create" name="fn-sortable.create"></a><a class="reference external mochidef" href="#fn-sortable.create">Sortable.create(element [, options])</a>:</p>
 <blockquote>
 <p>Create a new Sortable. Usually you'll call it with a UL element,
 but it can be customized with options to use something else.</p>
@@ -166,19 +166,17 @@ defines the node used to make branches in your tree (that
 contains leaves).</dd>
 </dl>
 <p>Other options are passed to the Draggables and Droppables objects created.
-Refer to <a class="mochiref reference external" href="DragAndDrop.html">MochiKit.DragAndDrop</a> for more information.</p>
+Refer to <a class="reference external mochiref" href="DragAndDrop.html">MochiKit.DragAndDrop</a> for more information.</p>
 <p>A bug with Internet Explorer rendering engine can cause a problem with the
 default effect used on start (the symptom being that the rows vanish).
-If you encounter this problem, pass <a class="mochiref reference external" href="Base.html#fn-noop">MochiKit.Base.noop</a>
+If you encounter this problem, pass <a class="reference external mochiref" href="Base.html#fn-noop">MochiKit.Base.noop</a>
 as the <tt class="docutils literal">starteffect</tt> option.</p>
 <dl class="docutils">
 <dt><em>Availability</em>:</dt>
 <dd>Available in MochiKit 1.4+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-sortable.destroy"></a>
-<a class="mochidef reference external" href="#fn-sortable.destroy">Sortable.destroy(element)</a>:</p>
+<p><a id="fn-sortable.destroy" name="fn-sortable.destroy"></a><a class="reference external mochidef" href="#fn-sortable.destroy">Sortable.destroy(element)</a>:</p>
 <blockquote>
 <p>Destroy a previously created sortable. It prevents further use of
 the Sortable functionnality on the element, unless recreated.</p>
@@ -187,13 +185,16 @@ the Sortable functionnality on the element, unless recreated.</p>
 <dd>Available in MochiKit 1.4+</dd>
 </dl>
 </blockquote>
-<p>
-<a name="fn-sortable.serialize"></a>
-<a class="mochidef reference external" href="#fn-sortable.serialize">Sortable.serialize(element [, options])</a>:</p>
+<p><a id="fn-sortable.serialize" name="fn-sortable.serialize"></a><a class="reference external mochidef" href="#fn-sortable.serialize">Sortable.serialize(element [, options])</a>:</p>
 <blockquote>
 <p>Serialize the content of a Sortable. Useful to send this content
 through a XMLHTTPRequest. The options overrides the ones of the Sortable
 only for the serialization.</p>
+<p>In this fork, tree traversal skips text and comment nodes when finding
+child lists. Tree serialization visits each list level once, so nested
+items retain their parent-child relationship without also appearing as
+root siblings. See the
+<a class="reference external" href="../../../examples/dnd_sortable/sortable_tree_test.html">sortable tree example</a>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="13%" />

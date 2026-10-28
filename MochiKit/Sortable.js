@@ -2,6 +2,9 @@
 Copyright (c) 2005 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
     Mochi-ized By Thomas Herve (_firstname_@nimail.org)
 
+Modified fork: <https://github.com/JasonBunting/mochikit>.
+See doc/html/MochiKit/ for this fork's API documentation.
+
 See scriptaculous.js for full license.
 
 ***/
@@ -414,7 +417,9 @@ MochiKit.Base.update(MochiKit.Sortable, {
 
     _tree: function (element, options, parent) {
         var self = MochiKit.Sortable;
-        var children = self.findElements(element, options) || [];
+        // Recursion happens below, once per child list. A recursive search
+        // here would also serialize descendants as siblings of their parent.
+        var children = self.findChildren(element, options.only, false, options.tag) || [];
 
         for (var i = 0; i < children.length; ++i) {
             var match = children[i].id.match(options.format);
@@ -449,8 +454,9 @@ MochiKit.Base.update(MochiKit.Sortable, {
         if (element && element.hasChildNodes) {
             containerTag = containerTag.toUpperCase();
             for (var i = 0; i < element.childNodes.length; ++i) {
-                if (element.childNodes[i].tagName.toUpperCase() == containerTag) {
-                    return element.childNodes[i];
+                var child = element.childNodes[i];
+                if (child.nodeType == 1 && child.tagName.toUpperCase() == containerTag) {
+                    return child;
                 }
             }
         }

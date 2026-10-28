@@ -75,6 +75,8 @@ div.document {
 }
 div.section { margin-bottom: 2em; }
 
+.fork-notice { margin: 20px 30px; padding: 12px; border: 1px solid #aebd91; background: #f5f8ee; }
+
 
 a.footnote-reference {
     vertical-align: super;

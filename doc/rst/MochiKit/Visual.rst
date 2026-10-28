@@ -623,7 +623,7 @@ Basic Effects Classes & Constants
     from        ``0.0``
     to          ``1.0``
     delay       ``0.0``
-    queue       ``'parallel'`` (see :mochiref:`The Effects Queue`)
+    queue       ``'parallel'`` (see `The Effects Queue`_)
     =========== ========================================
 
     *Availability*:

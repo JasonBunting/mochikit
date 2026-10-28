@@ -27,7 +27,7 @@ can be used as a pop-up or inline.
 
 It also allows for regex and level filtering!  MochiKit.LoggingPane is
 used as the default
-:mochiref:`MochiKit.Logging.debuggingBookmarklet()` if it is loaded.
+:mochiref:`MochiKit.Logging.Logger.prototype.debuggingBookmarklet()` if it is loaded.
 
 
 Dependencies

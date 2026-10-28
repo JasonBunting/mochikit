@@ -1,10 +1,50 @@
-2026-09-04      unreleased
+2026-10-28      fork maintenance (unreleased)
+
+- Regenerated the packed bundle with all fork additions. The customizer now
+  uses the local fork bundle instead of downloading upstream versions.
+- Updated packing, documentation, API-index, and distribution tools for
+  Python 3. Added checks for stale generated files and build regression tests.
+- Updated the API references, generated HTML, navigation, and fork notices.
+- Added a runnable example for SVG, semantic HTML, Promise adaptation, and
+  modern event accessors; expanded the existing keyboard example.
+- Distribution archives retain repository paths so documentation, examples,
+  and build commands work consistently in a checkout or extracted archive.
+- Fixed sortable-tree traversal of text and comment nodes, which caused the
+  inherited tree example to fail on formatted HTML. Also prevented nested
+  items from being serialized again as root siblings. Added regression
+  coverage for nested tree construction and serialization.
+
+2026-10-27      fork event and async updates (unreleased)
+
+- Added capture and passive options to Signal.connect() and connectOnce(),
+  retaining capture settings for disconnection and cleanup listeners.
+- Rejected native once and signal options to preserve connection bookkeeping.
+- Added keyName(), isComposing(), repeat(), pointer(), dataTransfer(), detail(),
+  isTrusted(), defaultPrevented(), persisted(), and stopImmediatePropagation()
+  to Signal.Event while preserving key(), mouse(), and stop() behavior.
+- Fixed capture-mode mouseenter/mouseleave emulation suppressing descendant
+  events. Documented the connectOnce()/stopImmediatePropagation() limitation.
+- Fixed fromPromise() handling of Deferred fulfillment and rejection values.
+- Added regression tests; the commit records 15 suites and 1,542 assertions
+  passing in Chrome and Firefox.
+
+2026-09-16      fork HTML helpers (unreleased)
+
+- Added DOM.ABBR, CODE, EM, KBD, SMALL, SUB, SUP, and TIME constructors using
+  the existing attributes-and-children convention.
+
+2026-09-04      initial fork additions (unreleased)
 
 - Added MochiKit.DOM.createSVG() and createSVGFunc() helpers for creating
   SVG elements with the correct namespace, plus SVG and its CIRCLE, G, IMAGE,
   LINE, PATH, POLYGON, RECT and TEXT convenience constructors.
 - Added MochiKit.Async.fromPromise() to adapt JavaScript Promises and thenables
   to MochiKit Deferreds.
+- Kept SVG creation separate from createDOM() to preserve HTML behavior.
+  Grouped child helpers under SVG and added SVG.IMAGE; the initial SVG_*
+  spellings were replaced rather than retained as aliases.
+- Adjusted layout tests for one-pixel rendering differences, XHR fixture
+  checks for LF/CRLF line endings, and the Chromium scope-leak filter.
 
 2013-01-05      v1.5
 
